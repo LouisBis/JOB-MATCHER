@@ -20,7 +20,7 @@
     },
     {
       "parameters": {
-        "url": "={{ $env.WTTJ_RSS_URL }}"
+        "url": "={{ $env.INDEED_RSS_URL }}"
       },
       "id": "node-rss",
       "name": "Fetch RSS",

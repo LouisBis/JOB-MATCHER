@@ -77,7 +77,7 @@ services:
       # ── Pass-through: app-level variables accessible inside n8n workflows ─
       OLLAMA_BASE_URL: http://ollama:11434 # Internal Docker DNS
       OLLAMA_MODEL: ${OLLAMA_MODEL:-mistral}
-      WTTJ_RSS_URL: ${WTTJ_RSS_URL:-}
+      INDEED_RSS_URL: ${INDEED_RSS_URL:-}
       FETCH_CRON: ${FETCH_CRON:-0 */3 * * *}
       MIN_SCORE: ${MIN_SCORE:-7}
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
