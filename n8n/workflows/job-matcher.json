@@ -20,17 +20,31 @@
     },
     {
       "parameters": {
-        "url": "={{ $env.INDEED_RSS_URL }}"
+        "method": "POST",
+        "url": "={{ 'https://api.apify.com/v2/acts/' + $env.APIFY_ACTOR_ID + '/run-sync-get-dataset-items' }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "={{ 'Bearer ' + $env.APIFY_TOKEN }}" }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ { position: $env.APIFY_QUERY, location: $env.APIFY_LOCATION, country: 'FR', maxItems: Number($env.APIFY_MAX_ITEMS || 50) } }}",
+        "options": {
+          "timeout": 300000
+        }
       },
-      "id": "node-rss",
-      "name": "Fetch RSS",
-      "type": "n8n-nodes-base.rssFeedRead",
-      "typeVersion": 1,
+      "id": "node-apify",
+      "name": "Fetch from Apify",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
       "position": [460, 300]
     },
     {
       "parameters": {
-        "jsCode": "// Persist seen offer IDs across executions — avoids re-notifying the same offer\nconst staticData = $getWorkflowStaticData('global');\nif (!staticData.seenOffers) staticData.seenOffers = [];\n\nconst newItems = [];\nfor (const item of $input.all()) {\n  const id = item.json.link || item.json.guid;\n  if (id && !staticData.seenOffers.includes(id)) {\n    staticData.seenOffers.push(id);\n    newItems.push(item);\n  }\n}\n\n// Cap history to prevent unbounded memory growth\nif (staticData.seenOffers.length > 500) {\n  staticData.seenOffers = staticData.seenOffers.slice(-500);\n}\n\nreturn newItems;"
+        "jsCode": "// Persist seen offer IDs across executions — avoids re-notifying the same offer\nconst staticData = $getWorkflowStaticData('global');\nif (!staticData.seenOffers) staticData.seenOffers = [];\n\n// Apify sync endpoint returns a JSON array in a single item\nconst input = $input.first().json;\nconst offers = Array.isArray(input) ? input : $input.all().map(i => i.json);\n\nconst newItems = [];\nfor (const offer of offers) {\n  const id = offer.url || offer.jobUrl || offer.id;\n  if (id && !staticData.seenOffers.includes(id)) {\n    staticData.seenOffers.push(id);\n    newItems.push({ json: offer });\n  }\n}\n\n// Cap history to prevent unbounded memory growth\nif (staticData.seenOffers.length > 500) {\n  staticData.seenOffers = staticData.seenOffers.slice(-500);\n}\n\nreturn newItems;"
       },
       "id": "node-dedup",
       "name": "Deduplicate",
@@ -40,7 +54,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const fs = require('fs');\n\nlet cvContent;\ntry {\n  cvContent = fs.readFileSync('/data/cv/cv.txt', 'utf-8').trim();\n} catch (err) {\n  throw new Error(`Cannot read CV file: ${err.message}`);\n}\n\nreturn $input.all().map(item => {\n  // Strip HTML tags from description before sending to LLM\n  const rawDesc = item.json.content || item.json.contentSnippet || '';\n  const description = rawDesc.replace(/<[^>]*>/g, ' ').replace(/\\s+/g, ' ').trim();\n\n  const prompt = [\n    'Score the following job offer against the candidate CV.',\n    'Return ONLY a valid JSON object — no markdown, no extra text:',\n    '{',\n    '  \"score\": <integer 1-10>,',\n    '  \"match_reasons\": [\"reason1\", ...],',\n    '  \"concerns\": [\"concern1\", ...],',\n    '  \"summary\": \"2-line summary\"',\n    '}',\n    '',\n    'CV:',\n    cvContent,\n    '',\n    'Job offer:',\n    `Title: ${item.json.title || 'N/A'}`,\n    `Description: ${description || 'N/A'}`,\n  ].join('\\n');\n\n  return {\n    json: {\n      title: item.json.title || 'Untitled',\n      link: item.json.link || '',\n      creator: item.json.creator || '',\n      body: {\n        model: process.env.OLLAMA_MODEL || 'mistral',\n        prompt,\n        stream: false,\n      },\n    },\n  };\n});"
+        "jsCode": "const fs = require('fs');\n\nlet cvContent;\ntry {\n  cvContent = fs.readFileSync('/data/cv/cv.txt', 'utf-8').trim();\n} catch (err) {\n  throw new Error(`Cannot read CV file: ${err.message}`);\n}\n\nreturn $input.all().map(item => {\n  // Apify Indeed scraper field names (may vary by actor version)\n  const title = item.json.positionName || item.json.title || 'Untitled';\n  const link = item.json.url || item.json.jobUrl || '';\n  const creator = item.json.company || item.json.companyName || '';\n\n  const rawDesc = item.json.description || item.json.jobDescription || item.json.snippet || '';\n  const description = rawDesc.replace(/<[^>]*>/g, ' ').replace(/\\s+/g, ' ').trim();\n\n  const prompt = [\n    'Score the following job offer against the candidate CV.',\n    'Return ONLY a valid JSON object — no markdown, no extra text:',\n    '{',\n    '  \"score\": <integer 1-10>,',\n    '  \"match_reasons\": [\"reason1\", ...],',\n    '  \"concerns\": [\"concern1\", ...],',\n    '  \"summary\": \"2-line summary\"',\n    '}',\n    '',\n    'CV:',\n    cvContent,\n    '',\n    'Job offer:',\n    `Title: ${title}`,\n    `Description: ${description || 'N/A'}`,\n  ].join('\\n');\n\n  return {\n    json: {\n      title,\n      link,\n      creator,\n      body: {\n        model: process.env.OLLAMA_MODEL || 'mistral',\n        prompt,\n        stream: false,\n      },\n    },\n  };\n});"
       },
       "id": "node-prepare",
       "name": "Prepare Request",
@@ -130,10 +144,10 @@
   "connections": {
     "Schedule": {
       "main": [
-        [{ "node": "Fetch RSS", "type": "main", "index": 0 }]
+        [{ "node": "Fetch from Apify", "type": "main", "index": 0 }]
       ]
     },
-    "Fetch RSS": {
+    "Fetch from Apify": {
       "main": [
         [{ "node": "Deduplicate", "type": "main", "index": 0 }]
       ]
