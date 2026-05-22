@@ -16,7 +16,10 @@
       "name": "Schedule",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
-      "position": [240, 300]
+      "position": [
+        240,
+        300
+      ]
     },
     {
       "parameters": {
@@ -25,13 +28,16 @@
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "Authorization", "value": "={{ 'Bearer ' + $env.APIFY_TOKEN }}" }
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + $env.APIFY_TOKEN }}"
+            }
           ]
         },
         "sendBody": true,
         "contentType": "json",
         "specifyBody": "json",
-        "jsonBody": "={{ { position: $env.APIFY_QUERY, location: $env.APIFY_LOCATION, country: 'FR', maxItems: Number($env.APIFY_MAX_ITEMS || 50) } }}",
+        "jsonBody": "={{ { title: $env.APIFY_QUERY, location: $env.APIFY_LOCATION, country: $env.APIFY_COUNTRY, limit: Number($env.APIFY_MAX_ITEMS || 50), datePosted: $env.APIFY_DATE_POSTED || '3' } }}",
         "options": {
           "timeout": 300000
         }
@@ -40,27 +46,36 @@
       "name": "Fetch from Apify",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [460, 300]
+      "position": [
+        460,
+        300
+      ]
     },
     {
       "parameters": {
-        "jsCode": "// Persist seen offer IDs across executions — avoids re-notifying the same offer\nconst staticData = $getWorkflowStaticData('global');\nif (!staticData.seenOffers) staticData.seenOffers = [];\n\n// Apify sync endpoint returns a JSON array in a single item\nconst input = $input.first().json;\nconst offers = Array.isArray(input) ? input : $input.all().map(i => i.json);\n\nconst newItems = [];\nfor (const offer of offers) {\n  const id = offer.url || offer.jobUrl || offer.id;\n  if (id && !staticData.seenOffers.includes(id)) {\n    staticData.seenOffers.push(id);\n    newItems.push({ json: offer });\n  }\n}\n\n// Cap history to prevent unbounded memory growth\nif (staticData.seenOffers.length > 500) {\n  staticData.seenOffers = staticData.seenOffers.slice(-500);\n}\n\nreturn newItems;"
+        "jsCode": "// Persist seen offer IDs across executions — avoids re-notifying the same offer\nconst staticData = $getWorkflowStaticData('global');\nif (!staticData.seenOffers) staticData.seenOffers = [];\n\n// Apify sync endpoint returns a JSON array in a single item\nconst input = $input.first().json;\nconst offers = Array.isArray(input) ? input : $input.all().map(i => i.json);\n\nconst newItems = [];\nfor (const offer of offers) {\n  const id = offer.url || offer.key;\n  if (id && !staticData.seenOffers.includes(id)) {\n    staticData.seenOffers.push(id);\n    newItems.push({ json: offer });\n  }\n}\n\n// Cap history to prevent unbounded memory growth\nif (staticData.seenOffers.length > 500) {\n  staticData.seenOffers = staticData.seenOffers.slice(-500);\n}\n\nreturn newItems;\n"
       },
       "id": "node-dedup",
       "name": "Deduplicate",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [680, 300]
+      "position": [
+        680,
+        300
+      ]
     },
     {
       "parameters": {
-        "jsCode": "const fs = require('fs');\n\nlet cvContent;\ntry {\n  cvContent = fs.readFileSync('/data/cv/cv.txt', 'utf-8').trim();\n} catch (err) {\n  throw new Error(`Cannot read CV file: ${err.message}`);\n}\n\nreturn $input.all().map(item => {\n  // Apify Indeed scraper field names (may vary by actor version)\n  const title = item.json.positionName || item.json.title || 'Untitled';\n  const link = item.json.url || item.json.jobUrl || '';\n  const creator = item.json.company || item.json.companyName || '';\n\n  const rawDesc = item.json.description || item.json.jobDescription || item.json.snippet || '';\n  const description = rawDesc.replace(/<[^>]*>/g, ' ').replace(/\\s+/g, ' ').trim();\n\n  const prompt = [\n    'Score the following job offer against the candidate CV.',\n    'Return ONLY a valid JSON object — no markdown, no extra text:',\n    '{',\n    '  \"score\": <integer 1-10>,',\n    '  \"match_reasons\": [\"reason1\", ...],',\n    '  \"concerns\": [\"concern1\", ...],',\n    '  \"summary\": \"2-line summary\"',\n    '}',\n    '',\n    'CV:',\n    cvContent,\n    '',\n    'Job offer:',\n    `Title: ${title}`,\n    `Description: ${description || 'N/A'}`,\n  ].join('\\n');\n\n  return {\n    json: {\n      title,\n      link,\n      creator,\n      body: {\n        model: process.env.OLLAMA_MODEL || 'mistral',\n        prompt,\n        stream: false,\n      },\n    },\n  };\n});"
+        "jsCode": "const fs = require('fs');\n\nlet cvContent;\ntry {\n  cvContent = fs.readFileSync('/data/cv/cv.txt', 'utf-8').trim();\n} catch (err) {\n  throw new Error(`Cannot read CV file: ${err.message}`);\n}\n\nreturn $input.all().map(item => {\n  const title = item.json.title || 'Untitled';\n  const link = item.json.url || '';\n  const creator = item.json.employer?.name || '';\n  const city = item.json.location?.city || '';\n\n  const rawDesc = item.json.description?.text || '';\n  // Truncate to avoid exceeding the model context window (4096 tokens)\n  const description = rawDesc.replace(/<[^>]*>/g, ' ').replace(/\\s+/g, ' ').trim().slice(0, 1000);\n\n  const prompt = [\n    'Score the following job offer against the candidate CV.',\n    'Return ONLY a valid JSON object with these exact keys:',\n    '  score (integer 1-10)',\n    '  match_reasons (array of strings)',\n    '  concerns (array of strings)',\n    '  summary (string, max 2 sentences)',\n    '',\n    'CV:',\n    cvContent,\n    '',\n    'Job offer:',\n    `Title: ${title}`,\n    city ? `Location: ${city}` : '',\n    `Description: ${description || 'N/A'}`,\n  ].filter(Boolean).join('\\n');\n\n  return {\n    json: {\n      title,\n      link,\n      creator,\n      body: {\n        model: $env.OLLAMA_MODEL || 'mistral',\n        prompt,\n        stream: false,\n        keep_alive: -1,\n        num_predict: 512,\n        // Forces the model to output valid JSON — eliminates all parsing issues\n        format: 'json',\n      },\n    },\n  };\n});\n"
       },
       "id": "node-prepare",
       "name": "Prepare Request",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [900, 300]
+      "position": [
+        900,
+        300
+      ]
     },
     {
       "parameters": {
@@ -71,24 +86,30 @@
         "specifyBody": "json",
         "jsonBody": "={{ $json.body }}",
         "options": {
-          "timeout": 120000
+          "timeout": 180000
         }
       },
       "id": "node-ollama",
       "name": "Score with Ollama",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [1120, 300]
+      "position": [
+        1120,
+        300
+      ]
     },
     {
       "parameters": {
-        "jsCode": "return $input.all().map((item, index) => {\n  const raw = item.json.response || '';\n\n  // Retrieve original offer data from the paired upstream item\n  const original = $('Prepare Request').all()[index].json;\n\n  // Extract the first JSON object from the LLM response\n  const match = raw.match(/\\{[\\s\\S]*\\}/);\n  if (!match) {\n    throw new Error(`LLM scoring failed for \"${original.title}\": no JSON in response`);\n  }\n\n  let parsed;\n  try {\n    parsed = JSON.parse(match[0]);\n  } catch (err) {\n    throw new Error(`LLM scoring failed for \"${original.title}\": ${err.message}`);\n  }\n\n  return {\n    json: {\n      title: original.title,\n      link: original.link,\n      creator: original.creator,\n      score: Number(parsed.score),\n      matchReasons: Array.isArray(parsed.match_reasons) ? parsed.match_reasons : [],\n      concerns: Array.isArray(parsed.concerns) ? parsed.concerns : [],\n      summary: parsed.summary || '',\n    },\n  };\n});"
+        "jsCode": "return $input.all().map((item, index) => {\n  const raw = item.json.response || '';\n\n  // Retrieve original offer data from the paired upstream item\n  const original = $('Prepare Request').all()[index].json;\n\n  const openIdx = raw.indexOf('{');\n  if (openIdx === -1) {\n    throw new Error(`LLM scoring failed for \"${original.title}\": no JSON in response`);\n  }\n\n  let parsed;\n  try {\n    parsed = JSON.parse(raw.slice(openIdx));\n  } catch (err) {\n    throw new Error(`LLM scoring failed for \"${original.title}\": ${err.message}`);\n  }\n\n  return {\n    json: {\n      title: original.title,\n      link: original.link,\n      creator: original.creator,\n      score: Number(parsed.score),\n      matchReasons: Array.isArray(parsed.match_reasons) ? parsed.match_reasons : [],\n      concerns: Array.isArray(parsed.concerns) ? parsed.concerns : [],\n      summary: parsed.summary || '',\n      chatId: $env.TELEGRAM_CHAT_ID || '',\n    },\n  };\n});\n"
       },
       "id": "node-parse",
       "name": "Parse Score",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1340, 300]
+      "position": [
+        1340,
+        300
+      ]
     },
     {
       "parameters": {
@@ -117,13 +138,16 @@
       "name": "Above Threshold?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
-      "position": [1560, 300]
+      "position": [
+        1560,
+        300
+      ]
     },
     {
       "parameters": {
         "resource": "message",
         "operation": "sendMessage",
-        "chatId": "={{ $env.TELEGRAM_CHAT_ID }}",
+        "chatId": "={{ $json.chatId }}",
         "text": "=🎯 {{ $json.score }}/10 — {{ $json.title }}{{ $json.creator ? ' @ ' + $json.creator : '' }}\n\n{{ $json.matchReasons.map(r => '✅ ' + r).join('\\n') }}{{ $json.concerns.length ? '\\n' + $json.concerns.map(c => '⚠️ ' + c).join('\\n') : '' }}\n\n{{ $json.summary }}\n\n🔗 {{ $json.link }}",
         "additionalFields": {}
       },
@@ -131,7 +155,10 @@
       "name": "Send to Telegram",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
-      "position": [1780, 200],
+      "position": [
+        1780,
+        200
+      ],
       "credentials": {
         "telegramApi": {
           "id": "",
@@ -144,37 +171,79 @@
   "connections": {
     "Schedule": {
       "main": [
-        [{ "node": "Fetch from Apify", "type": "main", "index": 0 }]
+        [
+          {
+            "node": "Fetch from Apify",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "Fetch from Apify": {
       "main": [
-        [{ "node": "Deduplicate", "type": "main", "index": 0 }]
+        [
+          {
+            "node": "Deduplicate",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "Deduplicate": {
       "main": [
-        [{ "node": "Prepare Request", "type": "main", "index": 0 }]
+        [
+          {
+            "node": "Prepare Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "Prepare Request": {
       "main": [
-        [{ "node": "Score with Ollama", "type": "main", "index": 0 }]
+        [
+          {
+            "node": "Score with Ollama",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "Score with Ollama": {
       "main": [
-        [{ "node": "Parse Score", "type": "main", "index": 0 }]
+        [
+          {
+            "node": "Parse Score",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "Parse Score": {
       "main": [
-        [{ "node": "Above Threshold?", "type": "main", "index": 0 }]
+        [
+          {
+            "node": "Above Threshold?",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "Above Threshold?": {
       "main": [
-        [{ "node": "Send to Telegram", "type": "main", "index": 0 }],
+        [
+          {
+            "node": "Send to Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ],
         []
       ]
     }

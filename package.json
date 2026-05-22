@@ -1,0 +1,11 @@
+{
+  "name": "job-matcher",
+  "version": "1.0.0",
+  "description": "Automated job scoring pipeline — n8n + Ollama + Telegram",
+  "scripts": {
+    "build": "node scripts/build-workflow.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

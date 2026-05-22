@@ -19,7 +19,6 @@ The score is the whole point. Each offer is rated **1 to 10** based on how well 
 Fast-growing B2B fintech. Strong technical match,
 slight gap on seniority.
 
-📍 Paris · Full remote · Full-time
 🔗 View offer → indeed.com/...
 ```
 
@@ -39,7 +38,7 @@ Apify → Indeed
    Deduplicate                 ← n8n static data, skips already-seen offers
          │
          ▼
-   Score against your CV       ← Ollama + Mistral 7B (local)
+   Score against your CV       ← Ollama (native, Metal GPU)
          │                        returns { score, reasons, concerns, summary }
          ▼
    Filter  score ≥ 7
@@ -54,21 +53,31 @@ Runs on a configurable cron schedule (e.g. every 3 hours). Job listings are fetc
 
 ## Stack
 
-| Layer         | Tool                |
-| ------------- | ------------------- |
-| Orchestration | n8n (Docker)        |
-| LLM           | Ollama · Mistral 7B |
-| Deduplication | n8n static data     |
-| Notifications | Telegram Bot API    |
-| Job source    | Indeed via Apify    |
+| Layer         | Tool                              |
+| ------------- | --------------------------------- |
+| Orchestration | n8n (Docker)                      |
+| LLM           | Ollama · llama3.2:3b (native)     |
+| Deduplication | n8n static data                   |
+| Notifications | Telegram Bot API                  |
+| Job source    | Indeed via Apify                  |
 
 ---
 
 ## Setup
 
-**Prerequisites:** Docker ≥ 24, Docker Compose ≥ 2, 8 GB RAM for the local LLM, and a free [Apify](https://apify.com) account.
+**Prerequisites:** Docker ≥ 24, Docker Compose ≥ 2, [Ollama](https://ollama.com/download) installed natively, and a free [Apify](https://apify.com) account.
 
-### 1. Clone & configure
+### 1. Install Ollama and pull the model
+
+Download the native macOS app from **[ollama.com/download](https://ollama.com/download)** — do not use `brew install ollama`, which ships an outdated version without Metal GPU support.
+
+Once installed, pull the model:
+
+```bash
+ollama pull llama3.2:3b
+```
+
+### 2. Clone & configure
 
 ```bash
 git clone https://github.com/yourname/job-matcher.git
@@ -92,7 +101,7 @@ TELEGRAM_BOT_TOKEN=       # from @BotFather
 TELEGRAM_CHAT_ID=         # your personal chat ID
 ```
 
-### 2. Add your CV
+### 3. Add your CV
 
 ```bash
 cp your-cv.txt data/cv/cv.txt
@@ -100,17 +109,20 @@ cp your-cv.txt data/cv/cv.txt
 
 The CV is read at scoring time — no restart needed to update it.
 
-### 3. Start the stack
+### 4. Start the stack
 
 ```bash
 docker compose up -d
 ```
 
-On first run, Ollama pulls Mistral 7B (~4 GB).
+The workflow is built automatically from source and imported into n8n on every startup.
 
-### 4. Connect Telegram credentials
+### 5. Connect Telegram credentials
 
-In n8n at `http://localhost:5678` → **Credentials → New → Telegram API** → paste your bot token → link it to the **Send to Telegram** node.
+In n8n at `http://localhost:5678`:
+
+1. **Credentials → New → Telegram API** → paste your bot token → name it **`Telegram`** → Save
+2. Open the **Job Matcher** workflow → **Send to Telegram** node → select the **`Telegram`** credential → Save
 
 ---
 
@@ -120,10 +132,20 @@ In n8n at `http://localhost:5678` → **Credentials → New → Telegram API** �
 job-matcher/
 ├── docker-compose.yml
 ├── .env.example
-├── n8n/workflows/
-│   └── job-matcher.json      ← auto-imported on docker compose up
+├── package.json                      ← npm run build
+├── scripts/
+│   └── build-workflow.js             ← injects code files into the workflow JSON
+├── n8n/
+│   ├── code/
+│   │   ├── deduplicate.js            ← deduplication logic
+│   │   ├── prepare-request.js        ← prompt builder
+│   │   └── parse-score.js            ← LLM response parser
+│   └── workflows/
+│       └── job-matcher.template.json ← workflow structure (edit this, not the generated JSON)
 ├── data/
-│   └── cv/cv.txt             ← your CV (git-ignored)
+│   └── cv/cv.txt                     ← your CV (git-ignored)
 └── docs/
-    └── SCORING_PROMPT.md     ← LLM prompt documentation
+    └── SCORING_PROMPT.md             ← LLM prompt documentation
 ```
+
+> To edit the workflow logic, modify files in `n8n/code/` then run `npm run build` before `docker compose up -d`.

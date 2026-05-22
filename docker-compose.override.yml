@@ -19,6 +19,3 @@ services:
       N8N_LOG_LEVEL: debug
     # Don't auto-restart on crash during dev (easier to see errors)
     restart: "no"
-
-  ollama:
-    restart: "no"

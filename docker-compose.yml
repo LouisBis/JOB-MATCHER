@@ -4,15 +4,14 @@
 # Services:
 #   - n8n-init   : One-time workflow importer (runs before n8n, then exits)
 #   - n8n        : Workflow orchestration (port 5678)
-#   - ollama     : Local LLM inference (port 11434)
+#
+# Ollama runs natively on macOS (not in Docker) for Metal GPU acceleration.
+# Install: brew install ollama && ollama pull mistral
 #
 # Usage:
 #   docker compose up -d
 #   docker compose logs -f
 #   docker compose down
-#
-# First-time LLM setup (after stack is running):
-#   docker compose exec ollama ollama pull mistral
 # =============================================================================
 
 services:
@@ -24,15 +23,18 @@ services:
     image: docker.n8n.io/n8nio/n8n:latest
     container_name: job-matcher-n8n-init
     restart: "no"
-    command: import:workflow --separate --input=/workflows/
+    # Build the workflow JSON from source files, then import it into n8n
+    entrypoint: >
+      sh -c "WORKFLOW_OUTPUT=/tmp/job-matcher.json node /build/scripts/build-workflow.js &&
+             n8n import:workflow --separate --input=/tmp/"
     volumes:
       - n8n_data:/home/node/.n8n
-      - ./n8n/workflows:/workflows:ro
+      - .:/build:ro
     networks:
       - job-matcher-net
     labels:
       com.job-matcher.service: "n8n-init"
-      com.job-matcher.description: "One-time workflow importer"
+      com.job-matcher.description: "Builds workflow from source and imports into n8n"
 
   # ─────────────────────────────────────────────────────────────────────────
   # n8n — Workflow automation engine
@@ -73,15 +75,21 @@ services:
       # ── Feature flags ─────────────────────────────────────────────────────
       N8N_DIAGNOSTICS_ENABLED: "false" # Disable telemetry
       N8N_VERSION_NOTIFICATIONS_ENABLED: "true"
+      N8N_BLOCK_ENV_ACCESS_IN_NODE: "false" # Allow $env.* in workflow expressions
+      NODE_FUNCTION_ALLOW_BUILTIN: "fs"     # Allow require('fs') in Code nodes
+
+      # ── Ollama — runs natively on host, reachable via host.docker.internal ─
+      OLLAMA_BASE_URL: http://host.docker.internal:11434
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-mistral}
 
       # ── Pass-through: app-level variables accessible inside n8n workflows ─
-      OLLAMA_BASE_URL: http://ollama:11434 # Internal Docker DNS
-      OLLAMA_MODEL: ${OLLAMA_MODEL:-mistral}
       APIFY_TOKEN: ${APIFY_TOKEN:-}
       APIFY_ACTOR_ID: ${APIFY_ACTOR_ID:-valig~indeed-jobs-scraper}
       APIFY_QUERY: ${APIFY_QUERY:-}
       APIFY_LOCATION: ${APIFY_LOCATION:-}
+      APIFY_COUNTRY: ${APIFY_COUNTRY:-fr}
       APIFY_MAX_ITEMS: ${APIFY_MAX_ITEMS:-50}
+      APIFY_DATE_POSTED: ${APIFY_DATE_POSTED:-3}
       FETCH_CRON: ${FETCH_CRON:-0 */3 * * *}
       MIN_SCORE: ${MIN_SCORE:-7}
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
@@ -97,8 +105,6 @@ services:
       - job-matcher-net
 
     depends_on:
-      ollama:
-        condition: service_healthy
       n8n-init:
         condition: service_completed_successfully
 
@@ -112,50 +118,6 @@ services:
     labels:
       com.job-matcher.service: "n8n"
       com.job-matcher.description: "Workflow orchestration engine"
-
-  # ─────────────────────────────────────────────────────────────────────────
-  # Ollama — Local LLM inference server
-  # Docs: https://ollama.com/
-  #
-  # GPU support: uncomment the `deploy` section below if you have an
-  # NVIDIA GPU and the NVIDIA Container Toolkit installed.
-  # ─────────────────────────────────────────────────────────────────────────
-  ollama:
-    image: ollama/ollama:latest
-    container_name: job-matcher-ollama
-    restart: unless-stopped
-
-    ports:
-      - "11434:11434" # Exposed for local dev/testing
-
-    volumes:
-      # Persist downloaded models (avoid re-downloading on restart)
-      - ollama_data:/root/.ollama
-
-    networks:
-      - job-matcher-net
-
-    # ── CPU-only by default ───────────────────────────────────────────────
-    # Uncomment the block below to enable NVIDIA GPU acceleration:
-    #
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: all
-    #           capabilities: [gpu]
-
-    healthcheck:
-      test: ["CMD", "ollama", "list"]
-      interval: 30s
-      timeout: 15s
-      retries: 5
-      start_period: 20s
-
-    labels:
-      com.job-matcher.service: "ollama"
-      com.job-matcher.description: "Local LLM inference (Mistral 7B)"
 
 # =============================================================================
 # Networks
@@ -175,8 +137,3 @@ volumes:
     name: job-matcher-n8n-data
     labels:
       com.job-matcher.volume: "n8n workflow data, credentials, executions"
-
-  ollama_data:
-    name: job-matcher-ollama-data
-    labels:
-      com.job-matcher.volume: "LLM model weights (mistral:7b ~4GB)"

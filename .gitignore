@@ -11,5 +11,11 @@ data/db/
 # macOS
 .DS_Store
 
-# n8n local exports (keep only the versioned workflow JSON)
+# n8n local exports
 n8n/exports/
+
+# Generated workflow — built from n8n/code/ + n8n/workflows/job-matcher.template.json
+n8n/workflows/job-matcher.json
+
+# Node
+node_modules/
