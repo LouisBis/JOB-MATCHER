@@ -14,8 +14,9 @@ data/db/
 # n8n local exports
 n8n/exports/
 
-# Generated workflow — built from n8n/code/ + n8n/workflows/job-matcher.template.json
-n8n/workflows/job-matcher.json
+# Generated workflows — built from n8n/code/ + *.template.json
+n8n/workflows/*.json
+!n8n/workflows/*.template.json
 
 # Node
 node_modules/

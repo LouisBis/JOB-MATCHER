@@ -25,7 +25,7 @@ services:
     restart: "no"
     # Build the workflow JSON from source files, then import it into n8n
     entrypoint: >
-      sh -c "WORKFLOW_OUTPUT=/tmp/job-matcher.json node /build/scripts/build-workflow.js &&
+      sh -c "WORKFLOW_OUTPUT_DIR=/tmp node /build/scripts/build-workflow.js &&
              n8n import:workflow --separate --input=/tmp/"
     volumes:
       - n8n_data:/home/node/.n8n
