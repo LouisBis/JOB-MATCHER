@@ -76,7 +76,7 @@ services:
       N8N_DIAGNOSTICS_ENABLED: "false" # Disable telemetry
       N8N_VERSION_NOTIFICATIONS_ENABLED: "true"
       N8N_BLOCK_ENV_ACCESS_IN_NODE: "false" # Allow $env.* in workflow expressions
-      NODE_FUNCTION_ALLOW_BUILTIN: "fs"     # Allow require('fs') in Code nodes
+      NODE_FUNCTION_ALLOW_BUILTIN: "fs,https" # Allow require('fs') and require('https') in Code nodes
 
       # ── Ollama — runs natively on host, reachable via host.docker.internal ─
       OLLAMA_BASE_URL: http://host.docker.internal:11434
@@ -91,6 +91,9 @@ services:
       APIFY_MAX_ITEMS: ${APIFY_MAX_ITEMS:-50}
       APIFY_DATE_POSTED: ${APIFY_DATE_POSTED:-3}
       FETCH_CRON: ${FETCH_CRON:-0 */3 * * *}
+      FT_CLIENT_ID: ${FT_CLIENT_ID:-}
+      FT_CLIENT_SECRET: ${FT_CLIENT_SECRET:-}
+      FT_DEPARTEMENT: ${FT_DEPARTEMENT:-75}
       MIN_SCORE: ${MIN_SCORE:-7}
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
       TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}

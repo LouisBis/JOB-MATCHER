@@ -21,6 +21,7 @@ return $input.all().map((item, index) => {
       title: original.title,
       link: original.link,
       creator: original.creator,
+      source: original.source || '',
       score: Number(parsed.score),
       matchReasons: Array.isArray(parsed.match_reasons) ? parsed.match_reasons : [],
       concerns: Array.isArray(parsed.concerns) ? parsed.concerns : [],

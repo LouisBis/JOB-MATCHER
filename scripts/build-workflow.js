@@ -22,11 +22,13 @@ const OUTPUT_DIR = process.env.WORKFLOW_OUTPUT_DIR
 
 /** Maps node IDs to their source files in n8n/code/. */
 const CODE_MAP = {
-  'node-config':        'config.js',
-  'node-dedup':         'deduplicate.js',
-  'node-prepare':       'prepare-request.js',
-  'node-parse':         'parse-score.js',
-  'node-format-error':  'format-error.js',
+  'node-config':           'config.js',
+  'node-normalize-indeed': 'normalize-indeed.js',
+  'node-fetch-ft':         'fetch-ft.js',
+  'node-dedup':            'deduplicate.js',
+  'node-prepare':          'prepare-request.js',
+  'node-parse':            'parse-score.js',
+  'node-format-error':     'format-error.js',
 };
 
 const templates = fs.readdirSync(WORKFLOWS_DIR)

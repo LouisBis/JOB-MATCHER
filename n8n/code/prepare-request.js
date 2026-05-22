@@ -8,14 +8,13 @@ try {
 }
 
 return $input.all().map(item => {
-  const title = item.json.title || 'Untitled';
-  const link = item.json.url || '';
-  const creator = item.json.employer?.name || '';
-  const city = item.json.location?.city || '';
-
-  const rawDesc = item.json.description?.text || '';
-  // Truncate to avoid exceeding the model context window (4096 tokens)
-  const description = rawDesc.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 1000);
+  const title       = item.json.title       || 'Untitled';
+  const link        = item.json.url         || '';
+  const creator     = item.json.company     || '';
+  const city        = item.json.city        || '';
+  const source      = item.json.source      || '';
+  // Already normalized and truncated upstream — no HTML stripping needed
+  const description = item.json.description || '';
 
   const system = [
     'You are an experienced tech recruiter.',
@@ -53,6 +52,7 @@ return $input.all().map(item => {
       title,
       link,
       creator,
+      source,
       ollamaUrl: `${$env.OLLAMA_BASE_URL || 'http://host.docker.internal:11434'}/api/generate`,
       body: {
         model: $env.OLLAMA_MODEL || 'mistral',

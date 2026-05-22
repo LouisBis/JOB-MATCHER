@@ -42,15 +42,43 @@
         "contentType": "json",
         "specifyBody": "json",
         "jsonBody": "={{ { title: $json.apifyQuery, location: $json.apifyLocation, country: $json.apifyCountry, limit: $json.apifyMaxItems, datePosted: $json.apifyDatePosted } }}",
-        "options": {
-          "timeout": 300000
-        }
+        "options": { "timeout": 300000 }
       },
       "id": "node-apify",
-      "name": "Fetch from Apify",
+      "name": "Fetch from Indeed",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [680, 300]
+      "position": [700, 160]
+    },
+    {
+      "parameters": {
+        "jsCode": ""
+      },
+      "id": "node-normalize-indeed",
+      "name": "Normalize Indeed",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [940, 160]
+    },
+    {
+      "parameters": {
+        "jsCode": ""
+      },
+      "id": "node-fetch-ft",
+      "name": "Fetch from France Travail",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [700, 440]
+    },
+    {
+      "parameters": {
+        "mode": "append"
+      },
+      "id": "node-merge",
+      "name": "Merge Sources",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [1180, 300]
     },
     {
       "parameters": {
@@ -60,7 +88,7 @@
       "name": "Deduplicate",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [900, 300]
+      "position": [1420, 300]
     },
     {
       "parameters": {
@@ -70,7 +98,7 @@
       "name": "Prepare Request",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1120, 300]
+      "position": [1660, 300]
     },
     {
       "parameters": {
@@ -80,15 +108,13 @@
         "contentType": "json",
         "specifyBody": "json",
         "jsonBody": "={{ $json.body }}",
-        "options": {
-          "timeout": 180000
-        }
+        "options": { "timeout": 180000 }
       },
       "id": "node-ollama",
       "name": "Score with Ollama",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [1340, 300]
+      "position": [1900, 300]
     },
     {
       "parameters": {
@@ -98,7 +124,7 @@
       "name": "Parse Score",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1560, 300]
+      "position": [2140, 300]
     },
     {
       "parameters": {
@@ -127,21 +153,21 @@
       "name": "Above Threshold?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
-      "position": [1780, 300]
+      "position": [2380, 300]
     },
     {
       "parameters": {
         "resource": "message",
         "operation": "sendMessage",
         "chatId": "={{ $json.chatId }}",
-        "text": "=🎯 {{ $json.score }}/10 — {{ $json.title }}{{ $json.creator ? ' @ ' + $json.creator : '' }}\n\n{{ $json.matchReasons.map(r => '✅ ' + r).join('\\n') }}{{ $json.concerns.length ? '\\n' + $json.concerns.map(c => '⚠️ ' + c).join('\\n') : '' }}\n\n{{ $json.summary }}\n\n🔗 {{ $json.link }}",
+        "text": "=🎯 {{ $json.score }}/10 — {{ $json.title }}{{ $json.creator ? ' @ ' + $json.creator : '' }}\n{{ $json.source === 'france-travail' ? '🇫🇷 France Travail' : '🔵 Indeed' }}\n\n{{ $json.matchReasons.map(r => '✅ ' + r).join('\\n') }}{{ $json.concerns.length ? '\\n' + $json.concerns.map(c => '⚠️ ' + c).join('\\n') : '' }}\n\n{{ $json.summary }}\n\n🔗 {{ $json.link }}",
         "additionalFields": {}
       },
       "id": "node-telegram",
       "name": "Send to Telegram",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
-      "position": [2000, 200],
+      "position": [2620, 200],
       "credentials": {
         "telegramApi": {
           "id": "",
@@ -153,39 +179,37 @@
   "pinData": {},
   "connections": {
     "Schedule": {
-      "main": [
-        [{ "node": "Config", "type": "main", "index": 0 }]
-      ]
+      "main": [[{ "node": "Config", "type": "main", "index": 0 }]]
     },
     "Config": {
-      "main": [
-        [{ "node": "Fetch from Apify", "type": "main", "index": 0 }]
-      ]
+      "main": [[
+        { "node": "Fetch from Indeed",        "type": "main", "index": 0 },
+        { "node": "Fetch from France Travail", "type": "main", "index": 0 }
+      ]]
     },
-    "Fetch from Apify": {
-      "main": [
-        [{ "node": "Deduplicate", "type": "main", "index": 0 }]
-      ]
+    "Fetch from Indeed": {
+      "main": [[{ "node": "Normalize Indeed", "type": "main", "index": 0 }]]
+    },
+    "Normalize Indeed": {
+      "main": [[{ "node": "Merge Sources", "type": "main", "index": 0 }]]
+    },
+    "Fetch from France Travail": {
+      "main": [[{ "node": "Merge Sources", "type": "main", "index": 1 }]]
+    },
+    "Merge Sources": {
+      "main": [[{ "node": "Deduplicate", "type": "main", "index": 0 }]]
     },
     "Deduplicate": {
-      "main": [
-        [{ "node": "Prepare Request", "type": "main", "index": 0 }]
-      ]
+      "main": [[{ "node": "Prepare Request", "type": "main", "index": 0 }]]
     },
     "Prepare Request": {
-      "main": [
-        [{ "node": "Score with Ollama", "type": "main", "index": 0 }]
-      ]
+      "main": [[{ "node": "Score with Ollama", "type": "main", "index": 0 }]]
     },
     "Score with Ollama": {
-      "main": [
-        [{ "node": "Parse Score", "type": "main", "index": 0 }]
-      ]
+      "main": [[{ "node": "Parse Score", "type": "main", "index": 0 }]]
     },
     "Parse Score": {
-      "main": [
-        [{ "node": "Above Threshold?", "type": "main", "index": 0 }]
-      ]
+      "main": [[{ "node": "Above Threshold?", "type": "main", "index": 0 }]]
     },
     "Above Threshold?": {
       "main": [
