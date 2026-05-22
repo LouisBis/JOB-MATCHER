@@ -1,0 +1,159 @@
+# =============================================================================
+# docker-compose.yml — Job Matcher Stack
+#
+# Services:
+#   - n8n        : Workflow orchestration (port 5678)
+#   - ollama     : Local LLM inference (port 11434)
+#
+# Usage:
+#   docker compose up -d
+#   docker compose logs -f
+#   docker compose down
+#
+# First-time LLM setup (after stack is running):
+#   docker compose exec ollama ollama pull mistral
+# =============================================================================
+
+services:
+  # ─────────────────────────────────────────────────────────────────────────
+  # n8n — Workflow automation engine
+  # Docs: https://docs.n8n.io/hosting/installation/docker/
+  # ─────────────────────────────────────────────────────────────────────────
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    container_name: job-matcher-n8n
+    restart: unless-stopped
+
+    ports:
+      - "${N8N_PORT:-5678}:5678"
+
+    environment:
+      # ── Auth ──────────────────────────────────────────────────────────────
+      N8N_BASIC_AUTH_ACTIVE: "true"
+      N8N_BASIC_AUTH_USER: ${N8N_BASIC_AUTH_USER:-admin}
+      N8N_BASIC_AUTH_PASSWORD: ${N8N_BASIC_AUTH_PASSWORD:?N8N_BASIC_AUTH_PASSWORD is required}
+
+      # ── Host & protocol ───────────────────────────────────────────────────
+      N8N_HOST: ${N8N_HOST:-localhost}
+      N8N_PORT: "5678"
+      N8N_PROTOCOL: ${N8N_PROTOCOL:-http}
+      WEBHOOK_URL: ${WEBHOOK_URL:-http://localhost:5678/}
+
+      # ── Execution & logging ───────────────────────────────────────────────
+      EXECUTIONS_PROCESS: main
+      EXECUTIONS_DATA_SAVE_ON_ERROR: all
+      EXECUTIONS_DATA_SAVE_ON_SUCCESS: last
+      EXECUTIONS_DATA_SAVE_ON_PROGRESS: "true"
+      EXECUTIONS_DATA_MAX_AGE: "336" # Keep execution logs 2 weeks (hours)
+      N8N_LOG_LEVEL: info
+
+      # ── Timezone ──────────────────────────────────────────────────────────
+      GENERIC_TIMEZONE: ${TIMEZONE:-Europe/Paris}
+      TZ: ${TIMEZONE:-Europe/Paris}
+
+      # ── Feature flags ─────────────────────────────────────────────────────
+      N8N_DIAGNOSTICS_ENABLED: "false" # Disable telemetry
+      N8N_VERSION_NOTIFICATIONS_ENABLED: "true"
+
+      # ── Pass-through: app-level variables accessible inside n8n workflows ─
+      OLLAMA_BASE_URL: http://ollama:11434 # Internal Docker DNS
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-mistral}
+      WTTJ_RSS_URL: ${WTTJ_RSS_URL:-}
+      FETCH_CRON: ${FETCH_CRON:-0 */3 * * *}
+      MIN_SCORE: ${MIN_SCORE:-7}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
+
+    volumes:
+      # Persist n8n data (workflows, credentials, executions)
+      - n8n_data:/home/node/.n8n
+      # Mount CV files (read-only inside container)
+      - ./data/cv:/data/cv:ro
+      # Mount DB directory for SQLite persistence
+      - ./data/db:/data/db
+
+    networks:
+      - job-matcher-net
+
+    depends_on:
+      ollama:
+        condition: service_healthy
+
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:5678/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+    labels:
+      com.job-matcher.service: "n8n"
+      com.job-matcher.description: "Workflow orchestration engine"
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Ollama — Local LLM inference server
+  # Docs: https://ollama.com/
+  #
+  # GPU support: uncomment the `deploy` section below if you have an
+  # NVIDIA GPU and the NVIDIA Container Toolkit installed.
+  # ─────────────────────────────────────────────────────────────────────────
+  ollama:
+    image: ollama/ollama:latest
+    container_name: job-matcher-ollama
+    restart: unless-stopped
+
+    ports:
+      - "11434:11434" # Exposed for local dev/testing
+
+    volumes:
+      # Persist downloaded models (avoid re-downloading on restart)
+      - ollama_data:/root/.ollama
+
+    networks:
+      - job-matcher-net
+
+    # ── CPU-only by default ───────────────────────────────────────────────
+    # Uncomment the block below to enable NVIDIA GPU acceleration:
+    #
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_period: 20s
+
+    labels:
+      com.job-matcher.service: "ollama"
+      com.job-matcher.description: "Local LLM inference (Mistral 7B)"
+
+# =============================================================================
+# Networks
+# =============================================================================
+networks:
+  job-matcher-net:
+    name: job-matcher-net
+    driver: bridge
+
+# =============================================================================
+# Volumes
+# Managed by Docker — persists across container restarts and recreations.
+# To wipe everything: docker compose down -v
+# =============================================================================
+volumes:
+  n8n_data:
+    name: job-matcher-n8n-data
+    labels:
+      com.job-matcher.volume: "n8n workflow data, credentials, executions"
+
+  ollama_data:
+    name: job-matcher-ollama-data
+    labels:
+      com.job-matcher.volume: "LLM model weights (mistral:7b ~4GB)"

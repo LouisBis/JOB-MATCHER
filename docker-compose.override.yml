@@ -1,0 +1,24 @@
+# =============================================================================
+# docker-compose.override.yml — Development overrides
+#
+# This file is automatically merged by Docker Compose when running locally.
+# It adds dev-only settings that should NOT be used in production:
+#   - Relaxed restart policies
+#   - Verbose logging
+#   - Disabled auth (optional, commented out)
+#
+# This file is NOT committed to git if you work in a team and have local
+# differences. Add it to .gitignore if needed.
+# =============================================================================
+
+services:
+
+  n8n:
+    # More verbose logging in dev
+    environment:
+      N8N_LOG_LEVEL: debug
+    # Don't auto-restart on crash during dev (easier to see errors)
+    restart: "no"
+
+  ollama:
+    restart: "no"

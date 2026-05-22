@@ -1,0 +1,15 @@
+# Environment — never commit secrets
+.env
+
+# Internal AI assistant config
+CLAUDE.md
+
+# Personal data
+data/cv/cv.txt
+data/db/
+
+# macOS
+.DS_Store
+
+# n8n local exports (keep only the versioned workflow JSON)
+n8n/exports/
