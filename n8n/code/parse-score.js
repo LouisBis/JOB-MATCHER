@@ -26,6 +26,7 @@ return $input.all().map((item, index) => {
       concerns: Array.isArray(parsed.concerns) ? parsed.concerns : [],
       summary: parsed.summary || '',
       chatId: $env.TELEGRAM_CHAT_ID || '',
+      minScore: Number($env.MIN_SCORE || 7),
     },
   };
 });

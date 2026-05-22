@@ -17,13 +17,27 @@ return $input.all().map(item => {
   // Truncate to avoid exceeding the model context window (4096 tokens)
   const description = rawDesc.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 1000);
 
+  const system = [
+    'You are an experienced tech recruiter.',
+    'Your job is to evaluate how well a job offer matches a candidate\'s profile.',
+    'You read CVs carefully to infer the candidate\'s domain (frontend, backend, etc.),',
+    'preferred contract type (CDI, freelance, etc.), seniority, and tech stack.',
+    'You are strict: a domain or contract mismatch is a dealbreaker, not a minor concern.',
+  ].join(' ');
+
   const prompt = [
     'Score the following job offer against the candidate CV.',
+    '',
+    'Rules:',
+    '- Infer the candidate\'s preferred role, contract type, and seniority from the CV',
+    '- A fundamental mismatch (wrong domain, wrong contract type) must result in a score of 1 to 3',
+    '- A score of 8 to 10 requires strong alignment on stack, seniority, and contract type',
+    '',
     'Return ONLY a valid JSON object with these exact keys:',
     '  score (integer 1-10)',
     '  match_reasons (array of strings)',
     '  concerns (array of strings)',
-    '  summary (string, max 2 sentences)',
+    '  summary (string: 2 sentences on the job itself — company, product, context — not the candidate)',
     '',
     'CV:',
     cvContent,
@@ -39,8 +53,10 @@ return $input.all().map(item => {
       title,
       link,
       creator,
+      ollamaUrl: `${$env.OLLAMA_BASE_URL || 'http://host.docker.internal:11434'}/api/generate`,
       body: {
         model: $env.OLLAMA_MODEL || 'mistral',
+        system,
         prompt,
         stream: false,
         keep_alive: -1,

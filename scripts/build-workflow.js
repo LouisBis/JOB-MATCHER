@@ -21,6 +21,7 @@ const OUTPUT = process.env.WORKFLOW_OUTPUT
 
 /** Maps node IDs defined in the template to their source files. */
 const CODE_MAP = {
+  'node-config':  'config.js',
   'node-dedup':   'deduplicate.js',
   'node-prepare': 'prepare-request.js',
   'node-parse':   'parse-score.js',
