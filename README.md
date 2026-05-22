@@ -1,6 +1,6 @@
 # Job Matcher
 
-> Scores every new job offer from Welcome to the Jungle against your CV using a local LLM — and sends only the best ones to Telegram.
+> Scores every new job offer from Indeed against your CV using a local LLM — and sends only the best ones to Telegram.
 
 ---
 
@@ -8,7 +8,7 @@
 
 The score is the whole point. Each offer is rated **1 to 10** based on how well it matches your CV. Anything at 7 or above gets pushed to your Telegram:
 
-```
+```text
 🎯 8/10 — Full-Stack TypeScript Developer @ Acme SAS
 
 ✅ Exact stack match: TypeScript, React, Node.js
@@ -20,7 +20,7 @@ Fast-growing B2B fintech. Strong technical match,
 slight gap on seniority.
 
 📍 Paris · Full remote · Full-time
-🔗 View offer → welcometothejungle.com/...
+🔗 View offer → indeed.com/...
 ```
 
 Offers below your threshold are silently skipped — no notification, no noise.
@@ -29,8 +29,8 @@ Offers below your threshold are silently skipped — no notification, no noise.
 
 ## How it works
 
-```
-Welcome to the Jungle (RSS)
+```text
+Indeed (RSS)
          │
          ▼
    Fetch new offers
@@ -54,13 +54,13 @@ Runs on a configurable cron schedule (e.g. every 3 hours), fully local in Docker
 
 ## Stack
 
-| Layer | Tool |
-|---|---|
-| Orchestration | n8n (Docker) |
-| LLM | Ollama · Mistral 7B |
-| Deduplication | n8n static data |
-| Notifications | Telegram Bot API |
-| Job source | Welcome to the Jungle RSS |
+| Layer         | Tool              |
+| ------------- | ----------------- |
+| Orchestration | n8n (Docker)      |
+| LLM           | Ollama · Mistral 7B |
+| Deduplication | n8n static data   |
+| Notifications | Telegram Bot API  |
+| Job source    | Indeed RSS        |
 
 ---
 
@@ -81,7 +81,7 @@ Open `.env` and fill in:
 ```dotenv
 TELEGRAM_BOT_TOKEN=       # from @BotFather
 TELEGRAM_CHAT_ID=         # your personal chat ID
-WTTJ_RSS_URL=             # your filtered WTTJ search URL
+INDEED_RSS_URL=           # your Indeed RSS search URL
 MIN_SCORE=7               # minimum score to trigger a notification
 ```
 
@@ -101,22 +101,20 @@ docker compose up -d
 
 On first run, Ollama pulls Mistral 7B (~4 GB).
 
-### 4. Import the workflow
+### 4. Connect Telegram credentials
 
-1. Open n8n at `http://localhost:5678`
-2. **Settings → Import workflow** → select `n8n/workflows/job-matcher.json`
-3. Activate the workflow
+In n8n at `http://localhost:5678` → **Credentials → New → Telegram API** → paste your bot token → link it to the **Send to Telegram** node.
 
 ---
 
 ## Project structure
 
-```
+```text
 job-matcher/
 ├── docker-compose.yml
 ├── .env.example
 ├── n8n/workflows/
-│   └── job-matcher.json      ← import this into n8n
+│   └── job-matcher.json      ← auto-imported on docker compose up
 ├── data/
 │   └── cv/cv.txt             ← your CV (git-ignored)
 └── docs/
