@@ -2,6 +2,7 @@
 # docker-compose.yml — Job Matcher Stack
 #
 # Services:
+#   - n8n-init   : One-time workflow importer (runs before n8n, then exits)
 #   - n8n        : Workflow orchestration (port 5678)
 #   - ollama     : Local LLM inference (port 11434)
 #
@@ -15,6 +16,24 @@
 # =============================================================================
 
 services:
+  # ─────────────────────────────────────────────────────────────────────────
+  # n8n-init — Imports workflows before n8n starts, then exits.
+  # Runs on every `docker compose up` but is idempotent (updates in place).
+  # ─────────────────────────────────────────────────────────────────────────
+  n8n-init:
+    image: docker.n8n.io/n8nio/n8n:latest
+    container_name: job-matcher-n8n-init
+    restart: "no"
+    command: import:workflow --separate --input=/workflows/
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./n8n/workflows:/workflows:ro
+    networks:
+      - job-matcher-net
+    labels:
+      com.job-matcher.service: "n8n-init"
+      com.job-matcher.description: "One-time workflow importer"
+
   # ─────────────────────────────────────────────────────────────────────────
   # n8n — Workflow automation engine
   # Docs: https://docs.n8n.io/hosting/installation/docker/
@@ -67,10 +86,8 @@ services:
     volumes:
       # Persist n8n data (workflows, credentials, executions)
       - n8n_data:/home/node/.n8n
-      # Mount CV files (read-only inside container)
+      # Mount CV file (read-only inside container)
       - ./data/cv:/data/cv:ro
-      # Mount DB directory for SQLite persistence
-      - ./data/db:/data/db
 
     networks:
       - job-matcher-net
@@ -78,6 +95,8 @@ services:
     depends_on:
       ollama:
         condition: service_healthy
+      n8n-init:
+        condition: service_completed_successfully
 
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:5678/healthz"]
