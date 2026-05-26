@@ -60,7 +60,7 @@ return $input.all().map(item => {
         prompt,
         stream: false,
         keep_alive: -1,
-        num_predict: 512,
+        num_predict: 256,
         // Forces the model to output valid JSON — eliminates all parsing issues
         format: 'json',
       },

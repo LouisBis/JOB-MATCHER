@@ -26,6 +26,7 @@ const CODE_MAP = {
   'node-normalize-indeed': 'normalize-indeed.js',
   'node-fetch-ft':         'fetch-ft.js',
   'node-dedup':            'deduplicate.js',
+  'node-pre-filter':       'pre-filter.js',
   'node-prepare':          'prepare-request.js',
   'node-parse':            'parse-score.js',
   'node-format-error':     'format-error.js',
