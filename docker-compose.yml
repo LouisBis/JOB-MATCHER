@@ -6,7 +6,7 @@
 #   - n8n        : Workflow orchestration (port 5678)
 #
 # Ollama runs natively on macOS (not in Docker) for Metal GPU acceleration.
-# Install: brew install ollama && ollama pull mistral
+# Install: download from ollama.com/download && ollama pull llama3.2:3b
 #
 # Usage:
 #   docker compose up -d
@@ -80,7 +80,7 @@ services:
 
       # ── Ollama — runs natively on host, reachable via host.docker.internal ─
       OLLAMA_BASE_URL: http://host.docker.internal:11434
-      OLLAMA_MODEL: ${OLLAMA_MODEL:-mistral}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.2:3b}
 
       # ── Pass-through: app-level variables accessible inside n8n workflows ─
       APIFY_TOKEN: ${APIFY_TOKEN:-}
