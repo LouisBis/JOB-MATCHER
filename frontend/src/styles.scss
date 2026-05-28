@@ -1,1 +1,39 @@
-/* You can add global styles to this file, and also import other style files */
+// Global base styles — apply design tokens to the document root.
+// Component-level styles go in their own .scss files.
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  font-family: var(--jm-font-family-sans);
+  font-size: var(--jm-font-size-md);
+  font-weight: var(--jm-font-weight-regular);
+  line-height: var(--jm-font-line-height-md);
+  color: var(--jm-color-gray-900);
+  background-color: var(--jm-color-gray-50);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-weight: var(--jm-font-weight-semibold);
+}
+
+p {
+  margin: 0;
+}
