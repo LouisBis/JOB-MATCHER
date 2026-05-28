@@ -123,6 +123,37 @@ services:
       com.job-matcher.service: "n8n"
       com.job-matcher.description: "Workflow orchestration engine"
 
+  # ─────────────────────────────────────────────────────────────────────────
+  # frontend — Angular dev server
+  # Serves the app at http://localhost:4200
+  # Source files are mounted for hot-reload; node_modules live in a named
+  # volume so host and container binaries never conflict.
+  # ─────────────────────────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: job-matcher-frontend
+    restart: unless-stopped
+
+    ports:
+      - "4200:4200"
+
+    volumes:
+      - ./frontend:/app
+      - frontend_node_modules:/app/node_modules
+
+    networks:
+      - job-matcher-net
+
+    depends_on:
+      n8n:
+        condition: service_healthy
+
+    labels:
+      com.job-matcher.service: "frontend"
+      com.job-matcher.description: "Angular dev server"
+
 # =============================================================================
 # Networks
 # =============================================================================
@@ -141,3 +172,7 @@ volumes:
     name: job-matcher-n8n-data
     labels:
       com.job-matcher.volume: "n8n workflow data, credentials, executions"
+  frontend_node_modules:
+    name: job-matcher-frontend-node-modules
+    labels:
+      com.job-matcher.volume: "Angular node_modules — isolated from host binaries"

@@ -1,0 +1,13 @@
+FROM node:22-alpine
+
+WORKDIR /app
+
+# Install dependencies as a separate layer — only rebuilt when package.json changes
+COPY package*.json ./
+RUN npm install
+
+EXPOSE 4200
+
+# --host 0.0.0.0 : listen on all interfaces, required inside a container
+# --poll 500     : filesystem polling for Docker Desktop on macOS (no native inotify)
+CMD ["npx", "ng", "serve", "--host", "0.0.0.0", "--poll", "500"]
