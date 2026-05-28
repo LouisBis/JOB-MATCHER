@@ -12,11 +12,10 @@ import { SourceBadgeComponent } from '../source-badge/source-badge.component';
  * @param offer - The offer to display
  */
 @Component({
-  selector: 'app-offer-card',
-  standalone: true,
-  imports: [DatePipe, RouterLink, ScoreBadgeComponent, SourceBadgeComponent],
-  templateUrl: './offer-card.component.html',
-  styleUrl: './offer-card.component.scss',
+    selector: 'app-offer-card',
+    imports: [DatePipe, RouterLink, ScoreBadgeComponent, SourceBadgeComponent],
+    templateUrl: './offer-card.component.html',
+    styleUrl: './offer-card.component.scss'
 })
 export class OfferCardComponent {
   readonly offer = input.required<Offer>();

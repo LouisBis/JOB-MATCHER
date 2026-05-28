@@ -9,11 +9,10 @@ import { LABELS } from '../../../../core/i18n/fr';
  * Fetches from n8n webhook (dev) or mock JSON (GitHub Pages).
  */
 @Component({
-  selector: 'app-offers-list',
-  standalone: true,
-  imports: [OfferCardComponent],
-  templateUrl: './offers-list.component.html',
-  styleUrl: './offers-list.component.scss',
+    selector: 'app-offers-list',
+    imports: [OfferCardComponent],
+    templateUrl: './offers-list.component.html',
+    styleUrl: './offers-list.component.scss'
 })
 export class OffersListComponent implements OnInit {
   readonly #offersService = inject(OffersService);

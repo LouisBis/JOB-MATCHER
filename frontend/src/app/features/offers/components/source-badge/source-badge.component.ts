@@ -7,11 +7,10 @@ import { JobSource } from '../../../../core/models';
  * @param source - Source identifier from the Offer model
  */
 @Component({
-  selector: 'app-source-badge',
-  standalone: true,
-  imports: [],
-  templateUrl: './source-badge.component.html',
-  styleUrl: './source-badge.component.scss',
+    selector: 'app-source-badge',
+    imports: [],
+    templateUrl: './source-badge.component.html',
+    styleUrl: './source-badge.component.scss'
 })
 export class SourceBadgeComponent {
   readonly source = input.required<JobSource>();

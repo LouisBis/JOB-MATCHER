@@ -12,11 +12,10 @@ import { LABELS } from '../../../../core/i18n/fr';
  * The offer id is read from the route param `:id`.
  */
 @Component({
-  selector: 'app-offer-detail',
-  standalone: true,
-  imports: [RouterLink, DatePipe, ScoreBadgeComponent, SourceBadgeComponent],
-  templateUrl: './offer-detail.component.html',
-  styleUrl: './offer-detail.component.scss',
+    selector: 'app-offer-detail',
+    imports: [RouterLink, DatePipe, ScoreBadgeComponent, SourceBadgeComponent],
+    templateUrl: './offer-detail.component.html',
+    styleUrl: './offer-detail.component.scss'
 })
 export class OfferDetailComponent implements OnInit {
   readonly #route = inject(ActivatedRoute);

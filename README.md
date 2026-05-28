@@ -1,6 +1,24 @@
 # Job Matcher
 
-> Web app that scores job offers from Indeed and France Travail against your CV using a local LLM — and surfaces only the best ones in a clean dashboard.
+> Web app that scores job offers from Indeed and France Travail against your CV using a **fully local LLM** — and surfaces only the best matches in a clean Angular dashboard.
+
+<p align="center">
+  <a href="https://louisbis.github.io/JOB-MATCHER/">
+    <img src="https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-4F46E5?style=for-the-badge&logo=github" alt="Live Demo" />
+  </a>
+</p>
+
+## Built with
+
+![Angular 19](https://img.shields.io/badge/Angular%2019-DD0031?style=flat-square&logo=angular&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![n8n](https://img.shields.io/badge/n8n-EA4B71?style=flat-square&logo=n8n&logoColor=white)
+![Ollama llama3.2:3b Metal GPU](https://img.shields.io/badge/Ollama-llama3.2%3A3b%20·%20Metal%20GPU-black?style=flat-square)
+![Untitled UI Design System](https://img.shields.io/badge/Untitled%20UI-Design%20System-6172F3?style=flat-square)
+![Style Dictionary](https://img.shields.io/badge/Style%20Dictionary-Tokens-F97316?style=flat-square)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
+
+---
 
 ---
 

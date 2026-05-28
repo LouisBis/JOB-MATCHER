@@ -7,11 +7,10 @@ import { Component, computed, input } from '@angular/core';
  * @param score - Integer score produced by the LLM
  */
 @Component({
-  selector: 'app-score-badge',
-  standalone: true,
-  imports: [],
-  templateUrl: './score-badge.component.html',
-  styleUrl: './score-badge.component.scss',
+    selector: 'app-score-badge',
+    imports: [],
+    templateUrl: './score-badge.component.html',
+    styleUrl: './score-badge.component.scss'
 })
 export class ScoreBadgeComponent {
   readonly score = input.required<number>();

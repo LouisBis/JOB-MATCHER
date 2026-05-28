@@ -11,11 +11,10 @@ import { environment } from '../../../../../environments/environment';
  * In mock mode (GitHub Pages), the form is read-only.
  */
 @Component({
-  selector: 'app-preferences',
-  standalone: true,
-  imports: [ReactiveFormsModule],
-  templateUrl: './preferences.component.html',
-  styleUrl: './preferences.component.scss',
+    selector: 'app-preferences',
+    imports: [ReactiveFormsModule],
+    templateUrl: './preferences.component.html',
+    styleUrl: './preferences.component.scss'
 })
 export class PreferencesComponent implements OnInit {
   readonly #prefsService = inject(PreferencesService);
