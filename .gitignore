@@ -1,15 +1,19 @@
 # Environment — never commit secrets
 .env
-
-# Internal AI assistant config
-CLAUDE.md
+.env.local
+.env.*.local
 
 # Personal data
 data/cv/cv.txt
 data/db/
 
-# macOS
+# OS
 .DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
 
 # n8n local exports
 n8n/exports/
