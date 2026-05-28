@@ -8,6 +8,7 @@ RUN npm install
 
 EXPOSE 4200
 
+# Generate CSS tokens first, then serve with Docker-required flags
 # --host 0.0.0.0 : listen on all interfaces, required inside a container
 # --poll 500     : filesystem polling for Docker Desktop on macOS (no native inotify)
-CMD ["npx", "ng", "serve", "--host", "0.0.0.0", "--poll", "500"]
+CMD ["sh", "-c", "npm run tokens && npx ng serve --host 0.0.0.0 --poll 500"]

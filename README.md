@@ -51,14 +51,14 @@ Runs on a configurable cron schedule. Indeed is fetched via [Apify](https://apif
 
 ## Stack
 
-| Layer         | Tool                                          |
-| ------------- | --------------------------------------------- |
-| Frontend      | Angular 19 (standalone, signals)              |
-| Orchestration | n8n (Docker)                                  |
-| LLM           | Ollama · llama3.2:3b (native, Metal GPU)      |
-| Deduplication | n8n static data                               |
-| Notifications | Telegram Bot API (optional)                   |
-| Job sources   | Indeed (via Apify) · France Travail (API)     |
+| Layer         | Tool                                      |
+| ------------- | ----------------------------------------- |
+| Frontend      | Angular 19 (standalone, signals)          |
+| Orchestration | n8n (Docker)                              |
+| LLM           | Ollama · llama3.2:3b (native, Metal GPU)  |
+| Deduplication | n8n static data                           |
+| Notifications | Telegram Bot API (optional)               |
+| Job sources   | Indeed (via Apify) · France Travail (API) |
 
 ---
 
@@ -77,7 +77,7 @@ ollama pull llama3.2:3b
 ### 2. Clone & configure
 
 ```bash
-git clone https://github.com/yourname/job-matcher.git
+git clone https://github.com/LouisBis/job-matcher.git
 cd job-matcher
 cp .env.example .env
 ```
@@ -117,6 +117,7 @@ docker compose up -d
 ```
 
 This starts three services:
+
 - **n8n** at `http://localhost:5678` — workflow engine
 - **n8n-init** — builds and imports the workflow on startup (then exits)
 - **frontend** at `http://localhost:4200` — Angular dashboard
@@ -167,6 +168,6 @@ job-matcher/
 ## Demo (GitHub Pages)
 
 A static demo with curated mock data is available at:
-`https://yourname.github.io/JOB-MATCHER/`
+`https://LouisBis.github.io/JOB-MATCHER/`
 
 No backend needed — the demo runs entirely in the browser against `assets/mock/`.

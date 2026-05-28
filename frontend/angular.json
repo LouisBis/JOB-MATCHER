@@ -54,6 +54,7 @@
               }
             ],
             "styles": [
+              "src/styles/generated/_tokens.css",
               "src/styles.scss"
             ],
             "scripts": []
