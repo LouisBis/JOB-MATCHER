@@ -1,0 +1,23 @@
+<article class="card">
+  <header class="card__header">
+    <a class="card__title" [routerLink]="['/offers', offer().id]">
+      {{ offer().title }}
+    </a>
+    <app-score-badge [score]="offer().score" />
+  </header>
+
+  <div class="card__meta">
+    <span class="card__company">{{ offer().company }}</span>
+    <span class="card__separator">·</span>
+    <span class="card__location">{{ offer().location }}</span>
+    <span class="card__separator">·</span>
+    <span class="card__contract">{{ offer().contractType }}</span>
+  </div>
+
+  <p class="card__summary">{{ offer().summary }}</p>
+
+  <footer class="card__footer">
+    <app-source-badge [source]="offer().source" />
+    <span class="card__date">{{ offer().publishedAt | date: 'd MMM yyyy' : '' : 'fr' }}</span>
+  </footer>
+</article>

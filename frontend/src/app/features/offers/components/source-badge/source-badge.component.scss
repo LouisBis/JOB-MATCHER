@@ -1,0 +1,19 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--jm-spacing-2);
+  border-radius: var(--jm-radius-full);
+  font-size: var(--jm-font-size-xs);
+  font-weight: var(--jm-font-weight-medium);
+  line-height: var(--jm-font-line-height-xs);
+
+  &--indeed {
+    background-color: var(--jm-color-brand-50);
+    color: var(--jm-color-brand-700);
+  }
+
+  &--france-travail {
+    background-color: var(--jm-color-gray-100);
+    color: var(--jm-color-gray-700);
+  }
+}
