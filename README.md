@@ -10,15 +10,13 @@
 
 ## Built with
 
-![Angular 19](https://img.shields.io/badge/Angular%2019-DD0031?style=flat-square&logo=angular&logoColor=white)
+![Angular 21](https://img.shields.io/badge/Angular%2021-DD0031?style=flat-square&logo=angular&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
 ![n8n](https://img.shields.io/badge/n8n-EA4B71?style=flat-square&logo=n8n&logoColor=white)
 ![Ollama llama3.2:3b Metal GPU](https://img.shields.io/badge/Ollama-llama3.2%3A3b%20·%20Metal%20GPU-black?style=flat-square)
 ![Untitled UI Design System](https://img.shields.io/badge/Untitled%20UI-Design%20System-6172F3?style=flat-square)
 ![Style Dictionary](https://img.shields.io/badge/Style%20Dictionary-Tokens-F97316?style=flat-square)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
-
----
 
 ---
 
@@ -30,7 +28,7 @@ A scored, filterable feed of job offers — each rated **1 to 10** based on how 
 🎯 9/10 — Développeur Angular Senior @ Acme SAS
 🔵 Indeed
 
-✅ Angular 19 — stack exacte
+✅ Angular 21 — stack exacte
 ✅ Full remote
 ✅ Niveau senior — cohérent avec le profil
 ⚠️  6 ans requis
@@ -71,7 +69,7 @@ Runs on a configurable cron schedule. Indeed is fetched via [Apify](https://apif
 
 | Layer         | Tool                                      |
 | ------------- | ----------------------------------------- |
-| Frontend      | Angular 19 (standalone, signals)          |
+| Frontend      | Angular 21 (standalone, signals)          |
 | Orchestration | n8n (Docker)                              |
 | LLM           | Ollama · llama3.2:3b (native, Metal GPU)  |
 | Deduplication | n8n static data                           |
@@ -95,8 +93,8 @@ ollama pull llama3.2:3b
 ### 2. Clone & configure
 
 ```bash
-git clone https://github.com/LouisBis/job-matcher.git
-cd job-matcher
+git clone https://github.com/LouisBis/JOB-MATCHER.git
+cd JOB-MATCHER
 cp .env.example .env
 ```
 
@@ -159,15 +157,20 @@ job-matcher/
 ├── package.json                          ← npm run build (n8n workflows)
 ├── scripts/
 │   └── build-workflow.js                 ← injects code files into workflow JSONs
-├── frontend/                             ← Angular app (job-matcher-frontend)
+├── .github/workflows/
+│   └── deploy-gh-pages.yml               ← auto-deploy to GitHub Pages on push to main
+├── frontend/                             ← Angular 21 app
+│   ├── design-tokens/                    ← Untitled UI tokens (JSON, source of truth)
+│   ├── build-tokens.mjs                  ← Style Dictionary v5 — tokens → CSS variables
 │   ├── Dockerfile.dev                    ← dev server container
+│   ├── public/
+│   │   └── assets/mock/                  ← curated JSON for GitHub Pages demo
 │   ├── src/
 │   │   ├── environments/                 ← dev (n8n) + github-pages (mock)
-│   │   ├── assets/mock/                  ← curated JSON for static demo
 │   │   └── app/
-│   │       ├── core/                     ← models, services
-│   │       └── features/                 ← offers, preferences
-│   └── angular.json                      ← includes github-pages build config
+│   │       ├── core/                     ← models, services, navbar, i18n
+│   │       └── features/                 ← offers (list, detail), preferences
+│   └── angular.json                      ← build configs: dev / mock / github-pages
 ├── n8n/
 │   ├── code/                             ← source of truth for all Code nodes
 │   └── workflows/
@@ -176,7 +179,8 @@ job-matcher/
 ├── data/
 │   └── cv/cv.txt                         ← your CV (git-ignored)
 └── docs/
-    └── SCORING_PROMPT.md
+    ├── SCORING_PROMPT.md
+    └── FRONTEND.md                       ← frontend architecture
 ```
 
 > To edit the n8n workflow logic, modify files in `n8n/code/` then run `npm run build` before `docker compose up -d`.
