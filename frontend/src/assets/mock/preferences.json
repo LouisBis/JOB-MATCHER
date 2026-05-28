@@ -1,0 +1,7 @@
+{
+  "minScore": 6,
+  "targetTitles": ["Développeur Front-end", "Développeur Angular", "Ingénieur Front-end", "Tech Lead Front-end"],
+  "excludedKeywords": ["Java", "Mobile", "React Native", "Data", "DevOps", "Embedded"],
+  "locations": ["Paris", "Lille", "Lyon", "Remote"],
+  "contractTypes": ["CDI"]
+}
