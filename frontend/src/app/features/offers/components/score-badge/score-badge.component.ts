@@ -1,5 +1,4 @@
 import { Component, computed, input } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 /**
  * Displays a numeric score (1–10) as a colored pill.
@@ -10,7 +9,7 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-score-badge',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './score-badge.component.html',
   styleUrl: './score-badge.component.scss',
 })

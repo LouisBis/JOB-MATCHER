@@ -1,5 +1,4 @@
 import { Component, input } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { JobSource } from '../../../../core/models';
 
 /**
@@ -10,7 +9,7 @@ import { JobSource } from '../../../../core/models';
 @Component({
   selector: 'app-source-badge',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './source-badge.component.html',
   styleUrl: './source-badge.component.scss',
 })

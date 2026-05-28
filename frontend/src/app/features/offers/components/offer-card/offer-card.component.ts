@@ -1,5 +1,5 @@
 import { Component, input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Offer } from '../../../../core/models';
 import { ScoreBadgeComponent } from '../score-badge/score-badge.component';
@@ -14,7 +14,7 @@ import { SourceBadgeComponent } from '../source-badge/source-badge.component';
 @Component({
   selector: 'app-offer-card',
   standalone: true,
-  imports: [CommonModule, RouterLink, ScoreBadgeComponent, SourceBadgeComponent],
+  imports: [DatePipe, RouterLink, ScoreBadgeComponent, SourceBadgeComponent],
   templateUrl: './offer-card.component.html',
   styleUrl: './offer-card.component.scss',
 })

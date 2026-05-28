@@ -1,0 +1,32 @@
+.page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--jm-spacing-8) var(--jm-spacing-4);
+}
+
+.page__title {
+  font-size: var(--jm-font-size-2xl);
+  font-weight: var(--jm-font-weight-semibold);
+  color: var(--jm-color-gray-900);
+  margin: 0 0 var(--jm-spacing-6);
+}
+
+.offers-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--jm-spacing-4);
+}
+
+.state-msg {
+  font-size: var(--jm-font-size-sm);
+  color: var(--jm-color-gray-500);
+  text-align: center;
+  padding: var(--jm-spacing-12) 0;
+
+  &--error {
+    color: var(--jm-color-error-700);
+  }
+}

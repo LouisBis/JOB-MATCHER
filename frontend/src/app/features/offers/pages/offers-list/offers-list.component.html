@@ -1,1 +1,19 @@
-<p>offers-list works!</p>
+<div class="page">
+  <h1 class="page__title">{{ labels.pageTitle }}</h1>
+
+  @if (loading()) {
+    <p class="state-msg">{{ labels.loading }}</p>
+  } @else if (error()) {
+    <p class="state-msg state-msg--error">{{ error() }}</p>
+  } @else if (offers().length === 0) {
+    <p class="state-msg">{{ labels.empty }}</p>
+  } @else {
+    <ul class="offers-grid">
+      @for (offer of offers(); track offer.id) {
+        <li>
+          <app-offer-card [offer]="offer" />
+        </li>
+      }
+    </ul>
+  }
+</div>
