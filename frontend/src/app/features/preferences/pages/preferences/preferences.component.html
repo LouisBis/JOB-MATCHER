@@ -1,1 +1,66 @@
-<p>preferences works!</p>
+<div class="page">
+  <h1 class="page__title">{{ labels.pageTitle }}</h1>
+
+  @if (isMock) {
+    <p class="notice">{{ labels.readonlyNotice }}</p>
+  }
+
+  @if (loading()) {
+    <p class="state-msg">{{ labels.loading }}</p>
+  } @else {
+    <form class="form" [formGroup]="form" (ngSubmit)="save()">
+
+      <div class="field">
+        <label class="field__label" for="minScore">{{ labels.minScore }}</label>
+        <p class="field__hint">{{ labels.minScoreHint }}</p>
+        <input
+          id="minScore"
+          class="field__input field__input--short"
+          type="number"
+          min="1"
+          max="10"
+          formControlName="minScore"
+        />
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="targetTitles">{{ labels.targetTitles }}</label>
+        <p class="field__hint">{{ labels.targetTitlesHint }}</p>
+        <input id="targetTitles" class="field__input" type="text" formControlName="targetTitles" />
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="excludedKeywords">{{ labels.excludedKeywords }}</label>
+        <p class="field__hint">{{ labels.excludedKeywordsHint }}</p>
+        <input id="excludedKeywords" class="field__input" type="text" formControlName="excludedKeywords" />
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="locations">{{ labels.locations }}</label>
+        <p class="field__hint">{{ labels.locationsHint }}</p>
+        <input id="locations" class="field__input" type="text" formControlName="locations" />
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="contractTypes">{{ labels.contractTypes }}</label>
+        <p class="field__hint">{{ labels.contractTypesHint }}</p>
+        <input id="contractTypes" class="field__input" type="text" formControlName="contractTypes" />
+      </div>
+
+      @if (!isMock) {
+        <div class="form__actions">
+          @if (successMsg()) {
+            <p class="msg msg--success">{{ successMsg() }}</p>
+          }
+          @if (errorMsg()) {
+            <p class="msg msg--error">{{ errorMsg() }}</p>
+          }
+          <button class="btn-primary" type="submit" [disabled]="form.invalid || saving()">
+            {{ saving() ? labels.saving : labels.save }}
+          </button>
+        </div>
+      }
+
+    </form>
+  }
+</div>
