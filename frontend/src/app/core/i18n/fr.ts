@@ -4,6 +4,13 @@ export const LABELS = {
     loading: 'Chargement des offres…',
     empty: 'Aucune offre disponible. Lancez une analyse depuis le backend.',
     loadError: 'Impossible de charger les offres. Vérifiez que le backend est démarré.',
+    notFound: 'Offre introuvable.',
+    backToList: '← Retour aux offres',
+    viewOffer: 'Voir l\'annonce',
+    publishedOn: 'Publiée le',
+    fetchedOn: 'Récupérée le',
+    llmSummary: 'Analyse LLM',
+    description: 'Description',
   },
   source: {
     indeed: 'Indeed',

@@ -1,1 +1,52 @@
-<p>offer-detail works!</p>
+<div class="page">
+  <a class="back-link" routerLink="/offers">{{ labels.backToList }}</a>
+
+  @if (loading()) {
+    <p class="state-msg">{{ labels.loading }}</p>
+  } @else if (error()) {
+    <p class="state-msg state-msg--error">{{ error() }}</p>
+  } @else {
+  @if (offer(); as o) {
+    <article class="detail">
+      <header class="detail__header">
+        <div class="detail__title-row">
+          <h1 class="detail__title">{{ o.title }}</h1>
+          <app-score-badge [score]="o.score" />
+        </div>
+
+        <div class="detail__meta">
+          <span>{{ o.company }}</span>
+          <span class="sep">·</span>
+          <span>{{ o.location }}</span>
+          <span class="sep">·</span>
+          <span>{{ o.contractType }}</span>
+          <span class="sep">·</span>
+          <app-source-badge [source]="o.source" />
+        </div>
+
+        <div class="detail__dates">
+          <span>{{ labels.publishedOn }} {{ o.publishedAt | date: 'd MMM yyyy' }}</span>
+          <span class="sep">·</span>
+          <span>{{ labels.fetchedOn }} {{ o.fetchedAt | date: 'd MMM yyyy' }}</span>
+        </div>
+      </header>
+
+      <section class="detail__section">
+        <h2 class="detail__section-title">{{ labels.llmSummary }}</h2>
+        <p class="detail__summary">{{ o.summary }}</p>
+      </section>
+
+      <section class="detail__section">
+        <h2 class="detail__section-title">{{ labels.description }}</h2>
+        <p class="detail__description">{{ o.description }}</p>
+      </section>
+
+      <footer class="detail__footer">
+        <a class="btn-primary" [href]="o.url" target="_blank" rel="noopener noreferrer">
+          {{ labels.viewOffer }} ↗
+        </a>
+      </footer>
+    </article>
+  }
+  }
+</div>
