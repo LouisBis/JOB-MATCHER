@@ -6,6 +6,7 @@
     "tokens": "node build-tokens.mjs",
     "start": "npm run tokens && ng serve",
     "build": "npm run tokens && ng build",
+    "build:gh-pages": "npm run tokens && ng build --configuration github-pages",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
