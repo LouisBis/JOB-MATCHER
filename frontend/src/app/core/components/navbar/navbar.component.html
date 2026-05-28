@@ -1,0 +1,25 @@
+<nav class="navbar">
+  <a class="navbar__brand" routerLink="/offers">Job Matcher</a>
+
+  <ul class="navbar__links">
+    <li>
+      <a
+        class="navbar__link"
+        routerLink="/offers"
+        routerLinkActive="navbar__link--active"
+        [routerLinkActiveOptions]="{ exact: false }"
+      >
+        {{ labels.offers }}
+      </a>
+    </li>
+    <li>
+      <a
+        class="navbar__link"
+        routerLink="/preferences"
+        routerLinkActive="navbar__link--active"
+      >
+        {{ labels.preferences }}
+      </a>
+    </li>
+  </ul>
+</nav>
