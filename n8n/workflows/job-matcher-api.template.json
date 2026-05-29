@@ -1,0 +1,215 @@
+{
+  "id": "job-matcher-api-v1",
+  "name": "Job Matcher API",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "jobs",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-get-jobs",
+      "name": "GET /jobs",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 200],
+      "webhookId": "jm-get-jobs"
+    },
+    {
+      "parameters": {
+        "jsCode": ""
+      },
+      "id": "node-read-offers",
+      "name": "Read Offers",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 200]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              { "name": "Access-Control-Allow-Origin", "value": "*" }
+            ]
+          }
+        }
+      },
+      "id": "respond-jobs",
+      "name": "Respond Jobs",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [680, 200],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json.offers }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              { "name": "Access-Control-Allow-Origin", "value": "*" }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "jobs/:id",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-get-job-by-id",
+      "name": "GET /jobs/:id",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 380],
+      "webhookId": "jm-get-job-by-id"
+    },
+    {
+      "parameters": {
+        "jsCode": ""
+      },
+      "id": "node-read-offer-by-id",
+      "name": "Read Offer By Id",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 380]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              { "name": "Access-Control-Allow-Origin", "value": "*" }
+            ]
+          }
+        }
+      },
+      "id": "respond-job-by-id",
+      "name": "Respond Job By Id",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [680, 380]
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "preferences",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-get-prefs",
+      "name": "GET /preferences",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 560],
+      "webhookId": "jm-get-prefs"
+    },
+    {
+      "parameters": {
+        "jsCode": ""
+      },
+      "id": "node-read-prefs",
+      "name": "Read Preferences",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 560]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              { "name": "Access-Control-Allow-Origin", "value": "*" }
+            ]
+          }
+        }
+      },
+      "id": "respond-prefs",
+      "name": "Respond Preferences",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [680, 560]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "preferences",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-post-prefs",
+      "name": "POST /preferences",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 740],
+      "webhookId": "jm-post-prefs"
+    },
+    {
+      "parameters": {
+        "jsCode": ""
+      },
+      "id": "node-write-prefs",
+      "name": "Write Preferences",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 740]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              { "name": "Access-Control-Allow-Origin", "value": "*" }
+            ]
+          }
+        }
+      },
+      "id": "respond-post-prefs",
+      "name": "Respond Post Preferences",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [680, 740]
+    }
+  ],
+  "connections": {
+    "GET /jobs": {
+      "main": [[{ "node": "Read Offers", "type": "main", "index": 0 }]]
+    },
+    "Read Offers": {
+      "main": [[{ "node": "Respond Jobs", "type": "main", "index": 0 }]]
+    },
+    "GET /jobs/:id": {
+      "main": [[{ "node": "Read Offer By Id", "type": "main", "index": 0 }]]
+    },
+    "Read Offer By Id": {
+      "main": [[{ "node": "Respond Job By Id", "type": "main", "index": 0 }]]
+    },
+    "GET /preferences": {
+      "main": [[{ "node": "Read Preferences", "type": "main", "index": 0 }]]
+    },
+    "Read Preferences": {
+      "main": [[{ "node": "Respond Preferences", "type": "main", "index": 0 }]]
+    },
+    "POST /preferences": {
+      "main": [[{ "node": "Write Preferences", "type": "main", "index": 0 }]]
+    },
+    "Write Preferences": {
+      "main": [[{ "node": "Respond Post Preferences", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

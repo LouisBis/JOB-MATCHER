@@ -22,6 +22,7 @@ const OUTPUT_DIR = process.env.WORKFLOW_OUTPUT_DIR
 
 /** Maps node IDs to their source files in n8n/code/. */
 const CODE_MAP = {
+  // Pipeline — job-matcher.template.json
   'node-config':           'config.js',
   'node-normalize-indeed': 'normalize-indeed.js',
   'node-fetch-ft':         'fetch-ft.js',
@@ -29,7 +30,13 @@ const CODE_MAP = {
   'node-pre-filter':       'pre-filter.js',
   'node-prepare':          'prepare-request.js',
   'node-parse':            'parse-score.js',
+  'node-write-offers':     'write-offers.js',
   'node-format-error':     'format-error.js',
+  // API — job-matcher-api.template.json
+  'node-read-offers':      'read-offers.js',
+  'node-read-offer-by-id': 'read-offer-by-id.js',
+  'node-read-prefs':       'read-preferences.js',
+  'node-write-prefs':      'write-preferences.js',
 };
 
 const templates = fs.readdirSync(WORKFLOWS_DIR)

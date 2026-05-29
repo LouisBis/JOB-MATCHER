@@ -138,6 +138,8 @@ This starts three services:
 - **n8n-init** — builds and imports the workflow on startup (then exits)
 - **frontend** at `http://localhost:4200` — Angular dashboard
 
+> **First run only:** open the **"Job Matcher API"** workflow in n8n and click **Publish**. This activates the webhooks used by the dashboard. The state persists in the n8n volume — no need to repeat unless you wipe volumes with `docker compose down -v`.
+
 ### 5. Connect Telegram credentials (optional)
 
 In n8n at `http://localhost:5678`:
@@ -175,9 +177,12 @@ job-matcher/
 │   ├── code/                             ← source of truth for all Code nodes
 │   └── workflows/
 │       ├── job-matcher.template.json
+│       ├── job-matcher-api.template.json  ← API webhooks (GET /jobs, GET|POST /preferences)
 │       └── error-handler.template.json
 ├── data/
-│   └── cv/cv.txt                         ← your CV (git-ignored)
+│   ├── cv/cv.txt                         ← your CV (git-ignored)
+│   ├── offers/offers.json                ← scored offers written by the pipeline (git-ignored)
+│   └── preferences/preferences.json     ← user preferences (git-ignored)
 └── docs/
     ├── SCORING_PROMPT.md
     └── FRONTEND.md                       ← frontend architecture

@@ -8,13 +8,15 @@ try {
 }
 
 return $input.all().map(item => {
-  const title       = item.json.title       || 'Untitled';
-  const link        = item.json.url         || '';
-  const creator     = item.json.company     || '';
-  const city        = item.json.city        || '';
-  const source      = item.json.source      || '';
+  const title        = item.json.title        || 'Untitled';
+  const link         = item.json.url          || '';
+  const creator      = item.json.company      || '';
+  const city         = item.json.city         || '';
+  const source       = item.json.source       || '';
+  const contractType = item.json.contractType || '';
+  const publishedAt  = item.json.publishedAt  || '';
   // Already normalized and truncated upstream — no HTML stripping needed
-  const description = item.json.description || '';
+  const description  = item.json.description  || '';
 
   const system = [
     'You are an experienced tech recruiter.',
@@ -55,7 +57,11 @@ return $input.all().map(item => {
       title,
       link,
       creator,
+      city,
       source,
+      contractType,
+      publishedAt,
+      description,
       ollamaUrl: `${$env.OLLAMA_BASE_URL || 'http://host.docker.internal:11434'}/api/generate`,
       body: {
         model: $env.OLLAMA_MODEL || 'llama3.2:3b',

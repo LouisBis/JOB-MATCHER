@@ -76,7 +76,7 @@ services:
       N8N_DIAGNOSTICS_ENABLED: "false" # Disable telemetry
       N8N_VERSION_NOTIFICATIONS_ENABLED: "true"
       N8N_BLOCK_ENV_ACCESS_IN_NODE: "false" # Allow $env.* in workflow expressions
-      NODE_FUNCTION_ALLOW_BUILTIN: "fs,https" # Allow require('fs') and require('https') in Code nodes
+      NODE_FUNCTION_ALLOW_BUILTIN: "fs,https,path" # Allow require('fs'), require('https') and require('path') in Code nodes
 
       # ── Ollama — runs natively on host, reachable via host.docker.internal ─
       OLLAMA_BASE_URL: http://host.docker.internal:11434
@@ -102,8 +102,10 @@ services:
     volumes:
       # Persist n8n data (workflows, credentials, executions)
       - n8n_data:/home/node/.n8n
-      # Mount CV file (read-only inside container)
+      # CV read-only, offers/preferences writable
       - ./data/cv:/data/cv:ro
+      - ./data/offers:/data/offers
+      - ./data/preferences:/data/preferences
 
     networks:
       - job-matcher-net

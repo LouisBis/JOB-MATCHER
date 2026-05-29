@@ -6,6 +6,8 @@
 # Personal data
 data/cv/cv.txt
 data/db/
+data/offers/
+data/preferences/
 
 # OS
 .DS_Store
