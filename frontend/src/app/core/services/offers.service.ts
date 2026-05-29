@@ -35,6 +35,16 @@ export class OffersService {
    * @param id - Offer identifier
    * @returns Observable of the matching offer, or undefined if not found
    */
+  /**
+   * Triggers the scoring pipeline via the n8n POST /run webhook.
+   * Returns immediately — the pipeline runs asynchronously in the background.
+   *
+   * @returns Observable that completes when the trigger is acknowledged
+   */
+  runPipeline(): Observable<void> {
+    return this.#http.post<void>(`${environment.apiUrl}/run`, null);
+  }
+
   getOfferById(id: string): Observable<Offer | undefined> {
     if (environment.useMock) {
       return this.getOffers().pipe(

@@ -31,7 +31,6 @@ const CODE_MAP = {
   'node-prepare':          'prepare-request.js',
   'node-parse':            'parse-score.js',
   'node-write-offers':     'write-offers.js',
-  'node-format-error':     'format-error.js',
   // API — job-matcher-api.template.json
   'node-read-offers':      'read-offers.js',
   'node-read-offer-by-id': 'read-offer-by-id.js',
