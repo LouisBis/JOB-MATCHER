@@ -25,7 +25,7 @@ if (fs.existsSync(FILE)) {
 // Build a lookup map by id for O(1) merge
 const byId = Object.fromEntries(existing.map(o => [o.id, o]));
 
-// Strip internal-only fields before writing (chatId, minScore are for Telegram)
+// Strip internal-only fields before writing
 const incomingOffers = $input.all().map(item => {
   const { chatId, minScore, matchReasons, concerns, ...offer } = item.json;
   return offer;
