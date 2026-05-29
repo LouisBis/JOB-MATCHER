@@ -1,3 +1,6 @@
+const fs = require('fs');
+try { const s = JSON.parse(fs.readFileSync('/data/status/status.json','utf-8')); fs.writeFileSync('/data/status/status.json', JSON.stringify({...s, step: 3}) + '\n'); } catch(e) {}
+
 /**
  * Pre-filters job offers by title before the expensive LLM scoring step.
  * Drops any offer whose title contains a keyword from FILTER_EXCLUDE (case-insensitive).

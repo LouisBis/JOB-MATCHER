@@ -1,3 +1,6 @@
+const fs = require('fs');
+try { const s = JSON.parse(fs.readFileSync('/data/status/status.json','utf-8')); fs.writeFileSync('/data/status/status.json', JSON.stringify({...s, step: 2}) + '\n'); } catch(e) {}
+
 // Persist seen offer IDs across executions — avoids re-notifying the same offer
 const staticData = $getWorkflowStaticData('global');
 if (!staticData.seenOffers) staticData.seenOffers = [];
@@ -18,6 +21,14 @@ for (const offer of offers) {
 // Cap history to prevent unbounded memory growth
 if (staticData.seenOffers.length > 500) {
   staticData.seenOffers = staticData.seenOffers.slice(-500);
+}
+
+// No new offers — close the pipeline immediately so the frontend stops polling
+if (newItems.length === 0) {
+  try {
+    const s = JSON.parse(fs.readFileSync('/data/status/status.json', 'utf-8'));
+    fs.writeFileSync('/data/status/status.json', JSON.stringify({ ...s, running: false }) + '\n');
+  } catch (e) {}
 }
 
 return newItems;

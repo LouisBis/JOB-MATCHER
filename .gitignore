@@ -8,6 +8,7 @@ data/cv/cv.txt
 data/db/
 data/offers/
 data/preferences/
+data/status/
 
 # OS
 .DS_Store
