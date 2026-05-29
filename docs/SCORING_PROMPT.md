@@ -64,7 +64,7 @@ Description: <normalized description, max 1000 chars>
 | `concerns`      | string[]       | Red flags or gaps (seniority, missing skills, etc.)     |
 | `summary`       | string         | 2-sentence description of the job — not the candidate   |
 
-Scores **≥ MIN_SCORE** (default: 7) trigger a Telegram notification. Lower scores are silently discarded.
+Scores **≥ MIN_SCORE** (default: 7) are saved and surfaced in the dashboard. Lower scores are stored but filtered out.
 
 ---
 

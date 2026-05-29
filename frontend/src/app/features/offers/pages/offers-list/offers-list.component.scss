@@ -4,11 +4,40 @@
   padding: var(--jm-spacing-8) var(--jm-spacing-4);
 }
 
+.page__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--jm-spacing-6);
+}
+
 .page__title {
   font-size: var(--jm-font-size-2xl);
   font-weight: var(--jm-font-weight-semibold);
   color: var(--jm-color-gray-900);
-  margin: 0 0 var(--jm-spacing-6);
+  margin: 0;
+}
+
+.btn-run {
+  padding: var(--jm-spacing-2) var(--jm-spacing-5);
+  background: var(--jm-color-brand-600);
+  color: white;
+  font-family: var(--jm-font-family-sans);
+  font-size: var(--jm-font-size-sm);
+  font-weight: var(--jm-font-weight-semibold);
+  border: none;
+  border-radius: var(--jm-radius-md);
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &:hover:not(:disabled) { background: var(--jm-color-brand-700); }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+.run-msg {
+  font-size: var(--jm-font-size-sm);
+  color: var(--jm-color-success-700);
+  margin-bottom: var(--jm-spacing-4);
 }
 
 .offers-grid {

@@ -96,8 +96,6 @@ services:
       FT_DEPARTEMENT: ${FT_DEPARTEMENT:-75}
       FILTER_EXCLUDE: ${FILTER_EXCLUDE:-}
       MIN_SCORE: ${MIN_SCORE:-7}
-      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
-      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
 
     volumes:
       # Persist n8n data (workflows, credentials, executions)

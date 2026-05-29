@@ -46,9 +46,6 @@ return $input.all().map((item, index) => {
       summary:      parsed.summary || '',
       publishedAt:  original.publishedAt || '',
       fetchedAt:    new Date().toISOString(),
-      // Kept for Telegram notification node
-      chatId:   $env.TELEGRAM_CHAT_ID || '',
-      minScore: Number($env.MIN_SCORE || 7),
     },
   };
 });

@@ -22,7 +22,7 @@
 
 ## What you get
 
-A scored, filterable feed of job offers — each rated **1 to 10** based on how well it matches your CV. The dashboard is the main interface; Telegram notifications are an optional push layer on top.
+A scored, filterable feed of job offers — each rated **1 to 10** based on how well it matches your CV. The Angular dashboard is the main interface.
 
 ```text
 🎯 9/10 — Développeur Angular Senior @ Acme SAS
@@ -57,8 +57,7 @@ France Travail API (OAuth2) ─────────────────�
                   ▼
           Filter score ≥ MIN_SCORE
                   │
-                  ├──► Angular dashboard   ← main interface
-                  └──► Telegram (optional) ← push notification
+                  └──► Angular dashboard   ← main interface
 ```
 
 Runs on a configurable cron schedule. Indeed is fetched via [Apify](https://apify.com); France Travail uses its direct public API (free). **CV and scoring are fully local — nothing sensitive leaves your machine.**
@@ -73,7 +72,6 @@ Runs on a configurable cron schedule. Indeed is fetched via [Apify](https://apif
 | Orchestration | n8n (Docker)                              |
 | LLM           | Ollama · llama3.2:3b (native, Metal GPU)  |
 | Deduplication | n8n static data                           |
-| Notifications | Telegram Bot API (optional)               |
 | Job sources   | Indeed (via Apify) · France Travail (API) |
 
 ---
@@ -115,9 +113,6 @@ FT_DEPARTEMENT=           # e.g. 75 for Paris, or leave empty for national
 FILTER_EXCLUDE=           # comma-separated title keywords to skip (e.g. java,devops)
 MIN_SCORE=7
 
-# Telegram (optional)
-TELEGRAM_BOT_TOKEN=
-TELEGRAM_CHAT_ID=
 ```
 
 ### 3. Add your CV
@@ -139,14 +134,6 @@ This starts three services:
 - **frontend** at `http://localhost:4200` — Angular dashboard
 
 > **First run only:** open the **"Job Matcher API"** workflow in n8n and click **Publish**. This activates the webhooks used by the dashboard. The state persists in the n8n volume — no need to repeat unless you wipe volumes with `docker compose down -v`.
-
-### 5. Connect Telegram credentials (optional)
-
-In n8n at `http://localhost:5678`:
-
-1. **Credentials → New → Telegram API** → paste your bot token → name it **`Telegram`** → Save
-2. Open each workflow → Telegram nodes → select the **`Telegram`** credential → Save
-3. **Activate** the **Job Matcher — Error Handler** workflow (toggle ON)
 
 ---
 
