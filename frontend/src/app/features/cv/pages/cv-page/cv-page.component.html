@@ -28,6 +28,7 @@
           <span class="pending-file__icon">📄</span>
           <span class="pending-file__name">{{ pendingFile()!.name }}</span>
           <span class="pending-file__size">{{ pendingFile()!.size / 1024 | number:'1.0-0' }} Ko</span>
+          @if (isMock) {<span class="pending-file__demo">simulation</span>}
         </div>
         <div class="pending-file__actions">
           <button class="btn-cancel" type="button" (click)="cancelPending()" [disabled]="uploading()">

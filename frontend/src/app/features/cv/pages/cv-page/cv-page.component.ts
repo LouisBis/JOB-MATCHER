@@ -3,6 +3,7 @@ import { DatePipe, DecimalPipe } from '@angular/common';
 import { CvService } from '../../../../core/services';
 import { CvMeta } from '../../../../core/models';
 import { LABELS } from '../../../../core/i18n/fr';
+import { environment } from '../../../../../environments/environment';
 
 const ACCEPTED_TYPES = ['text/plain'];
 const MAX_SIZE_MB = 5;
@@ -22,6 +23,7 @@ export class CvPageComponent implements OnInit {
   readonly #cvService = inject(CvService);
 
   readonly labels = LABELS.cv;
+  readonly isMock = environment.useMock;
   readonly cvMeta = signal<CvMeta | null>(null);
   readonly loading = signal(true);
   readonly pendingFile = signal<File | null>(null);
