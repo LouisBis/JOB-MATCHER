@@ -8,7 +8,7 @@ const fs   = require('fs');
 const path = require('path');
 
 const FILE = '/data/preferences/preferences.json';
-const body = $request.body;
+const body = $input.first().json.body ?? $input.first().json;
 
 if (!body || typeof body !== 'object') {
   throw new Error('Request body must be a JSON object');

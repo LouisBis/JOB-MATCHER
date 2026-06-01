@@ -1,0 +1,72 @@
+<div class="page">
+  <h1 class="page__title">{{ labels.pageTitle }}</h1>
+
+  @if (loading()) {
+    <p class="state-msg">{{ labels.loading }}</p>
+  } @else {
+
+    @if (cvMeta()?.exists) {
+      <div class="cv-card">
+        <div class="cv-card__header">
+          <span class="cv-card__icon">📄</span>
+          <div class="cv-card__info">
+            <span class="cv-card__filename">{{ cvMeta()!.filename }}</span>
+            <span class="cv-card__date">
+              {{ labels.uploadedOn }} {{ cvMeta()!.uploadedAt | date:'d MMM yyyy, HH:mm' }}
+            </span>
+          </div>
+        </div>
+        @if (cvMeta()!.preview) {
+          <pre class="cv-card__preview">{{ cvMeta()!.preview }}</pre>
+        }
+      </div>
+    }
+
+    @if (pendingFile()) {
+      <div class="pending-file">
+        <div class="pending-file__info">
+          <span class="pending-file__icon">📄</span>
+          <span class="pending-file__name">{{ pendingFile()!.name }}</span>
+          <span class="pending-file__size">{{ pendingFile()!.size / 1024 | number:'1.0-0' }} Ko</span>
+          @if (isMock) {<span class="pending-file__demo">simulation</span>}
+        </div>
+        <div class="pending-file__actions">
+          <button class="btn-cancel" type="button" (click)="cancelPending()" [disabled]="uploading()">
+            {{ labels.cancel }}
+          </button>
+          <button class="btn-send" type="button" (click)="confirmUpload()" [disabled]="uploading()">
+            {{ uploading() ? labels.uploading : labels.send }}
+          </button>
+        </div>
+      </div>
+    } @else {
+      <div
+        class="drop-zone"
+        [class.drop-zone--dragging]="isDragging()"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave()"
+        (drop)="onDrop($event)"
+      >
+        <input
+          #fileInput
+          type="file"
+          class="drop-zone__input"
+          accept=".txt"
+          (change)="onFileSelect($event)"
+        />
+        <p class="drop-zone__label">{{ labels.dropZone }}</p>
+        <p class="drop-zone__or">{{ labels.or }}</p>
+        <button class="btn-browse" type="button" (click)="fileInput.click()">
+          {{ labels.browse }}
+        </button>
+        <p class="drop-zone__hint">{{ labels.accepted }}</p>
+      </div>
+    }
+
+    @if (uploadMsg()) {
+      <p class="upload-msg" [class.upload-msg--error]="uploadMsg()!.error">
+        {{ uploadMsg()!.text }}
+      </p>
+    }
+  }
+</div>
