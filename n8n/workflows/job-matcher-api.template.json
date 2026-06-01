@@ -272,6 +272,114 @@
         680,
         920
       ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "cv",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-get-cv",
+      "name": "GET /cv",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        1100
+      ],
+      "webhookId": "jm-get-cv"
+    },
+    {
+      "parameters": {
+        "jsCode": ""
+      },
+      "id": "node-read-cv",
+      "name": "Read CV",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        1100
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "id": "respond-get-cv",
+      "name": "Respond Get CV",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        680,
+        1100
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "cv",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-post-cv",
+      "name": "POST /cv",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        1280
+      ],
+      "webhookId": "jm-post-cv"
+    },
+    {
+      "parameters": {
+        "jsCode": ""
+      },
+      "id": "node-write-cv",
+      "name": "Write CV",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        1280
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "id": "respond-post-cv",
+      "name": "Respond Post CV",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        680,
+        1280
+      ]
     }
   ],
   "connections": {
@@ -379,6 +487,50 @@
         [
           {
             "node": "Respond Post Preferences",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET /cv": {
+      "main": [
+        [
+          {
+            "node": "Read CV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read CV": {
+      "main": [
+        [
+          {
+            "node": "Respond Get CV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST /cv": {
+      "main": [
+        [
+          {
+            "node": "Write CV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write CV": {
+      "main": [
+        [
+          {
+            "node": "Respond Post CV",
             "type": "main",
             "index": 0
           }
