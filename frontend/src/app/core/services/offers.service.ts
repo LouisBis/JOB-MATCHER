@@ -1,8 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
+import { map, Observable, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Offer } from '../models';
+import { Offer, PipelineStatus } from '../models';
 
 /**
  * Fetches scored job offers.
@@ -43,6 +43,19 @@ export class OffersService {
    */
   runPipeline(): Observable<void> {
     return this.#http.post<void>(`${environment.apiUrl}/run`, null);
+  }
+
+  /**
+   * Returns the current pipeline status (step index, step labels, running flag).
+   * Intended for polling — call every 2 s while the pipeline is running.
+   *
+   * @returns Observable of PipelineStatus
+   */
+  getStatus(): Observable<PipelineStatus> {
+    if (environment.useMock) {
+      return of({ running: false, step: 0, steps: [] });
+    }
+    return this.#http.get<PipelineStatus>(`${environment.apiUrl}/status`);
   }
 
   getOfferById(id: string): Observable<Offer | undefined> {

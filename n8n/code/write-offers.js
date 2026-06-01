@@ -9,7 +9,11 @@
 const fs   = require('fs');
 const path = require('path');
 
-const FILE = '/data/offers/offers.json';
+const FILE        = '/data/offers/offers.json';
+const STATUS_FILE = '/data/status/status.json';
+
+// Step 5 — saving
+try { const s = JSON.parse(fs.readFileSync(STATUS_FILE,'utf-8')); fs.writeFileSync(STATUS_FILE, JSON.stringify({...s, step: 5}) + '\n'); } catch(e) {}
 
 // Load existing offers (empty array if file doesn't exist yet)
 let existing = [];
@@ -40,5 +44,8 @@ const merged = Object.values(byId)
 
 fs.mkdirSync(path.dirname(FILE), { recursive: true });
 fs.writeFileSync(FILE, JSON.stringify(merged, null, 2) + '\n');
+
+// Pipeline complete
+try { const s = JSON.parse(fs.readFileSync(STATUS_FILE,'utf-8')); fs.writeFileSync(STATUS_FILE, JSON.stringify({...s, running: false}) + '\n'); } catch(e) {}
 
 return merged.map(offer => ({ json: offer }));

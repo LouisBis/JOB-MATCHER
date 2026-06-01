@@ -7,7 +7,7 @@ export const LABELS = {
     notFound: 'Offre introuvable.',
     runPipeline: 'Lancer l\'analyse',
     running: 'Analyse en cours…',
-    runSuccess: 'Analyse lancée — les nouvelles offres apparaîtront dans quelques minutes.',
+    runSuccess: 'Analyse terminée — les offres ont été mises à jour.',
     runError: 'Impossible de lancer l\'analyse.',
     backToList: '← Retour aux offres',
     viewOffer: 'Voir l\'annonce',

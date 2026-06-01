@@ -1,4 +1,5 @@
 const fs = require('fs');
+try { const s = JSON.parse(fs.readFileSync('/data/status/status.json','utf-8')); fs.writeFileSync('/data/status/status.json', JSON.stringify({...s, step: 4}) + '\n'); } catch(e) {}
 
 let cvContent;
 try {

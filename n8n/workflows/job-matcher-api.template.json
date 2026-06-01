@@ -167,6 +167,60 @@
     },
     {
       "parameters": {
+        "httpMethod": "GET",
+        "path": "status",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-get-status",
+      "name": "GET /status",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        740
+      ],
+      "webhookId": "jm-get-status"
+    },
+    {
+      "parameters": {
+        "jsCode": ""
+      },
+      "id": "node-read-status",
+      "name": "Read Status",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        740
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "id": "respond-status",
+      "name": "Respond Status",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        680,
+        740
+      ]
+    },
+    {
+      "parameters": {
         "httpMethod": "POST",
         "path": "preferences",
         "responseMode": "responseNode",
@@ -178,7 +232,7 @@
       "typeVersion": 2,
       "position": [
         240,
-        740
+        920
       ],
       "webhookId": "jm-post-prefs"
     },
@@ -192,7 +246,7 @@
       "typeVersion": 2,
       "position": [
         460,
-        740
+        920
       ]
     },
     {
@@ -216,7 +270,7 @@
       "typeVersion": 1,
       "position": [
         680,
-        740
+        920
       ]
     }
   ],
@@ -281,6 +335,28 @@
         [
           {
             "node": "Respond Preferences",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET /status": {
+      "main": [
+        [
+          {
+            "node": "Read Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Status": {
+      "main": [
+        [
+          {
+            "node": "Respond Status",
             "type": "main",
             "index": 0
           }

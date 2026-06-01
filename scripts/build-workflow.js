@@ -36,6 +36,7 @@ const CODE_MAP = {
   'node-read-offer-by-id': 'read-offer-by-id.js',
   'node-read-prefs':       'read-preferences.js',
   'node-write-prefs':      'write-preferences.js',
+  'node-read-status':      'read-status.js',
 };
 
 const templates = fs.readdirSync(WORKFLOWS_DIR)

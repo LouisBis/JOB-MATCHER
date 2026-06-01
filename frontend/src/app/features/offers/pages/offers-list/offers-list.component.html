@@ -1,13 +1,26 @@
 <div class="page">
   <div class="page__header">
     <h1 class="page__title">{{ labels.pageTitle }}</h1>
-    @if (!isMock) {
-      <button class="btn-run" (click)="run()" [disabled]="running()">
-        {{ running() ? labels.running : labels.runPipeline }}
-      </button>
-    }
+    <button class="btn-run" (click)="run()" [disabled]="running()">
+      {{ running() ? labels.running : labels.runPipeline }}
+    </button>
   </div>
-  @if (runMsg()) {
+
+  @if (running() && pipelineSteps().length > 0) {
+    <div class="pipeline-progress">
+      <span class="pipeline-progress__label">
+        {{ stepProgressText() }}
+        @if (isMock) {<span class="pipeline-progress__demo">simulation</span>}
+      </span>
+      <div class="pipeline-progress__track" role="progressbar"
+           [attr.aria-valuenow]="progressPct()"
+           aria-valuemin="0" aria-valuemax="100">
+        <div class="pipeline-progress__fill" [style.width.%]="progressPct()"></div>
+      </div>
+    </div>
+  }
+
+  @if (runMsg() && !running()) {
     <p class="run-msg">{{ runMsg() }}</p>
   }
 

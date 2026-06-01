@@ -34,6 +34,38 @@
   &:disabled { opacity: 0.5; cursor: not-allowed; }
 }
 
+.pipeline-progress {
+  margin-bottom: var(--jm-spacing-4);
+
+  &__label {
+    display: block;
+    font-size: var(--jm-font-size-sm);
+    color: var(--jm-color-gray-600);
+    margin-bottom: var(--jm-spacing-2);
+  }
+
+  &__demo {
+    margin-left: var(--jm-spacing-2);
+    font-size: var(--jm-font-size-xs);
+    color: var(--jm-color-gray-400);
+    font-style: italic;
+  }
+
+  &__track {
+    height: 6px;
+    background: var(--jm-color-gray-200);
+    border-radius: var(--jm-radius-full);
+    overflow: hidden;
+  }
+
+  &__fill {
+    height: 100%;
+    background: var(--jm-color-brand-600);
+    border-radius: var(--jm-radius-full);
+    transition: width 0.4s ease;
+  }
+}
+
 .run-msg {
   font-size: var(--jm-font-size-sm);
   color: var(--jm-color-success-700);

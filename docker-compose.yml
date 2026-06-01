@@ -104,6 +104,7 @@ services:
       - ./data/cv:/data/cv:ro
       - ./data/offers:/data/offers
       - ./data/preferences:/data/preferences
+      - ./data/status:/data/status
 
     networks:
       - job-matcher-net
