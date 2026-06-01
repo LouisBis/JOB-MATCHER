@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [dev, main]
+
+jobs:
+  test-n8n:
+    name: n8n Code nodes tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+  test-angular:
+    name: Angular unit tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: frontend
+
+      - name: Run tests (headless Chrome)
+        run: npm run test:ci
+        working-directory: frontend
+
+  check-source-branch:
+    name: Source branch must be dev
+    runs-on: ubuntu-latest
+    if: github.base_ref == 'main'
+
+    steps:
+      - name: Verify PR comes from dev
+        run: |
+          if [ "${{ github.head_ref }}" != "dev" ]; then
+            echo "❌ Only 'dev' can be merged into main (got '${{ github.head_ref }}')"
+            exit 1
+          fi
+          echo "✅ Source branch is dev"

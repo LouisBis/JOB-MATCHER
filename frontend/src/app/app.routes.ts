@@ -22,6 +22,13 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'cv',
+    loadComponent: () =>
+      import('./features/cv/pages/cv-page/cv-page.component').then(
+        m => m.CvPageComponent
+      ),
+  },
+  {
     path: 'preferences',
     loadComponent: () =>
       import('./features/preferences/pages/preferences/preferences.component').then(

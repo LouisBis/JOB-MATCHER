@@ -100,8 +100,8 @@ services:
     volumes:
       # Persist n8n data (workflows, credentials, executions)
       - n8n_data:/home/node/.n8n
-      # CV read-only, offers/preferences writable
-      - ./data/cv:/data/cv:ro
+      # CV writable — uploaded via the frontend drag & drop
+      - ./data/cv:/data/cv
       - ./data/offers:/data/offers
       - ./data/preferences:/data/preferences
       - ./data/status:/data/status
