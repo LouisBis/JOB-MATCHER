@@ -3,9 +3,18 @@
   "version": "1.0.0",
   "description": "Automated job scoring pipeline — n8n + Ollama + Angular dashboard",
   "scripts": {
-    "build": "node scripts/build-workflow.js"
+    "build": "node scripts/build-workflow.js",
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "engines": {
     "node": ">=18"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": ["**/n8n/tests/**/*.test.js"]
+  },
+  "devDependencies": {
+    "jest": "^30.4.2"
   }
 }
