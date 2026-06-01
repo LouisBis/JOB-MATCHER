@@ -8,7 +8,8 @@
     "build": "npm run tokens && ng build",
     "build:gh-pages": "npm run tokens && ng build --configuration github-pages",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "test:ci": "ng test --no-watch --no-progress --browsers=ChromeHeadless"
   },
   "private": true,
   "dependencies": {

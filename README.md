@@ -17,6 +17,8 @@
 ![Untitled UI Design System](https://img.shields.io/badge/Untitled%20UI-Design%20System-6172F3?style=flat-square)
 ![Style Dictionary](https://img.shields.io/badge/Style%20Dictionary-Tokens-F97316?style=flat-square)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
+![Jest](https://img.shields.io/badge/Jest-C21325?style=flat-square&logo=jest&logoColor=white)
+![Karma](https://img.shields.io/badge/Karma%20%2B%20Jasmine-009639?style=flat-square)
 
 ---
 
@@ -147,7 +149,8 @@ job-matcher/
 ├── scripts/
 │   └── build-workflow.js                 ← injects code files into workflow JSONs
 ├── .github/workflows/
-│   └── deploy-gh-pages.yml               ← auto-deploy to GitHub Pages on push to main
+│   ├── deploy-gh-pages.yml               ← auto-deploy to GitHub Pages on push to main
+│   └── ci.yml                            ← runs tests on every PR to dev/main
 ├── frontend/                             ← Angular 21 app
 │   ├── design-tokens/                    ← Untitled UI tokens (JSON, source of truth)
 │   ├── build-tokens.mjs                  ← Style Dictionary v5 — tokens → CSS variables
@@ -157,11 +160,12 @@ job-matcher/
 │   ├── src/
 │   │   ├── environments/                 ← dev (n8n) + github-pages (mock)
 │   │   └── app/
-│   │       ├── core/                     ← models, services, navbar, i18n
-│   │       └── features/                 ← offers (list, detail), preferences
+│   │       ├── core/                     ← models, services (+ *.spec.ts), navbar, i18n
+│   │       └── features/                 ← offers (list, detail), preferences, cv (+ *.spec.ts)
 │   └── angular.json                      ← build configs: dev / mock / github-pages
 ├── n8n/
 │   ├── code/                             ← source of truth for all Code nodes
+│   ├── tests/                            ← Jest unit tests for Code nodes (35 tests)
 │   └── workflows/
 │       ├── job-matcher.template.json
 │       ├── job-matcher-api.template.json  ← API webhooks (GET /jobs, GET|POST /preferences)
@@ -176,6 +180,20 @@ job-matcher/
 ```
 
 > To edit the n8n workflow logic, modify files in `n8n/code/` then run `npm run build` before `docker compose up -d`.
+
+---
+
+## Tests
+
+```bash
+# n8n Code nodes (Jest)
+npm test
+
+# Angular (Karma + Jasmine, headless Chrome)
+cd frontend && npm run test:ci
+```
+
+The CI pipeline runs both suites automatically on every PR to `dev` or `main`.
 
 ---
 

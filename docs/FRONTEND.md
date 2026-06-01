@@ -25,8 +25,8 @@ frontend/
         ├── app.routes.ts           ← lazy routes (one chunk per page)
         ├── app.component.*         ← shell: <app-navbar> + <router-outlet>
         ├── core/
-        │   ├── models/             ← TypeScript interfaces (Offer, Preferences)
-        │   ├── services/           ← OffersService, PreferencesService
+        │   ├── models/             ← TypeScript interfaces (Offer, Preferences, CvMeta, PipelineStatus)
+        │   ├── services/           ← OffersService, PreferencesService, CvService (+ *.spec.ts)
         │   ├── components/navbar/  ← sticky top nav, RouterLinkActive
         │   └── i18n/fr.ts          ← all UI labels as typed constants (no hardcoded strings)
         └── features/
@@ -36,10 +36,12 @@ frontend/
             │   │   ├── score-badge/    ← 1–10 colored pill (green / orange / red)
             │   │   └── source-badge/   ← Indeed / France Travail pill
             │   └── pages/
-            │       ├── offers-list/    ← dashboard, offers sorted by score desc
+            │       ├── offers-list/    ← dashboard, pipeline progress bar, offers sorted by score desc
             │       └── offer-detail/   ← full view + external "Voir l'annonce" CTA
-            └── preferences/
-                └── pages/preferences/ ← reactive form, read-only in mock mode
+            ├── preferences/
+            │   └── pages/preferences/ ← reactive form, read-only in mock mode
+            └── cv/
+                └── pages/cv-page/     ← drag & drop upload, two-step confirm (+ *.spec.ts)
 ```
 
 ---
@@ -91,8 +93,12 @@ Both services switch their data source based on `environment.useMock`:
 |---|---|---|
 | `getOffers()` | `GET /webhook/jobs` | `assets/mock/offers.json` |
 | `getOfferById(id)` | `GET /webhook/jobs/:id` | filters mock list client-side |
+| `getStatus()` | `GET /webhook/status` | returns `{ running: false }` |
+| `runPipeline()` | `POST /webhook/run` | — |
 | `getPreferences()` | `GET /webhook/preferences` | `assets/mock/preferences.json` |
 | `savePreferences()` | `POST /webhook/preferences` | disabled (form read-only) |
+| `getCv()` | `GET /webhook/cv` | `assets/mock/cv.json` |
+| `uploadCv(file)` | `POST /webhook/cv` — body `{ text, filename }` | simulated with `delay(1400)` |
 
 ---
 
@@ -155,6 +161,28 @@ Single-language by design (French). Switching to multi-language would mean repla
 | `development` (default) | `false` | `/` | `npm start` with n8n running |
 | `mock` | `true` | `/` | `ng serve --configuration mock` — UI dev without backend |
 | `github-pages` | `true` | `/JOB-MATCHER/` | `npm run build:gh-pages` → GitHub Pages |
+
+---
+
+## Tests
+
+Karma + Jasmine — 25 tests covering services and components.
+
+```bash
+cd frontend
+
+# Interactive (watch mode)
+npm test
+
+# Headless CI
+npm run test:ci
+```
+
+| Spec file | What's covered |
+|---|---|
+| `core/services/cv.service.spec.ts` | `getCv()` HTTP, `uploadCv()` FileReader + POST |
+| `core/services/offers.service.spec.ts` | `getOffers()`, `getOfferById()`, `getStatus()`, `runPipeline()` |
+| `features/cv/pages/cv-page/cv-page.component.spec.ts` | file validation, drag events, upload success/error paths |
 
 ---
 
