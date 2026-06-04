@@ -203,3 +203,5 @@ A static demo with curated mock data is available at:
 `https://LouisBis.github.io/JOB-MATCHER/`
 
 No backend needed — the demo runs entirely in the browser against `assets/mock/`.
+
+MIT License © 2026 LouisBis
