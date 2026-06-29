@@ -1,5 +1,6 @@
-import { Component, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { JobSource } from '../../../../core/models';
+import { LABELS } from '../../../../core/i18n/fr';
 
 /**
  * Displays the job source (Indeed / France Travail) as a styled pill.
@@ -14,13 +15,5 @@ import { JobSource } from '../../../../core/models';
 })
 export class SourceBadgeComponent {
   readonly source = input.required<JobSource>();
-
-  /**
-   * Human-readable label for the source.
-   *
-   * @returns Formatted source name
-   */
-  label(): string {
-    return this.source() === 'france-travail' ? 'France Travail' : 'Indeed';
-  }
+  readonly label = computed(() => LABELS.source[this.source()]);
 }
