@@ -17,3 +17,16 @@ export interface Offer {
   publishedAt: string; // ISO 8601
   fetchedAt: string;  // ISO 8601
 }
+
+export interface CvMeta {
+  filename: string | null;
+  uploadedAt: string | null;
+  preview: string | null;
+  exists: boolean;
+}
+
+export interface PipelineStatus {
+  running: boolean;
+  step: number;
+  steps: string[];
+}

@@ -39,6 +39,8 @@ const CODE_MAP = {
   'node-read-status':      'read-status.js',
   'node-read-cv':          'read-cv.js',
   'node-write-cv':         'write-cv.js',
+  // Error handler — error-handler.template.json
+  'node-format-error':     'format-error.js',
 };
 
 const templates = fs.readdirSync(WORKFLOWS_DIR)
